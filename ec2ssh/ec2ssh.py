@@ -22,7 +22,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Simple argparse CLI')
     parser.add_argument('-k', '--key-path', dest='key_path', help='Specify private key path', default=os.environ.get('KEY_PATH'), required=False)
     parser.add_argument('-u', '--username', dest='username', help='Specify login user name', default=os.environ.get('USERNAME'), required=False)
-    parser.add_argument('-b', '--bastion-name', dest='bastion_name', help='Specify bastion instance name tag', default=os.environ.get('BASTION_NAME'), required=False)
+    parser.add_argument('-b', '--bastion-name', dest='bastion_name', help='Specify bastion instance name', default=os.environ.get('BASTION_NAME'), required=False)
     parser.add_argument('-e', '--bastion-key-path', dest='bastion_key_path', help='Specify bastion private key path', default=os.environ.get('BASTION_KEY_PATH'), required=False)
     parser.add_argument('-s', '--bastion-username', dest='bastion_username', help='Specify bastion user name', default=os.environ.get('BASTION_USERNAME'), required=False)
     parser.add_argument('-p', '--profile', dest='profile', help='Specify profile name for AWS credentials', default=os.environ.get('AWS_PROFILE'), required=False)
