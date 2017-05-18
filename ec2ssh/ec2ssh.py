@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import subprocess
 import os
 import argparse
@@ -93,6 +95,7 @@ def _generate_access(instance, key_path, username, vif, public=True):
             p = subprocess.Popen('netstat -rn', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = p.communicate()
             if not host in out.decode('utf-8'):
+                print('Input sudo password if required sudo password.')
                 subprocess.call('sudo route add {}/32 -interface {}'.format(host, vif), shell=True)
     else:
         host = instance['PrivateIpAddress']
