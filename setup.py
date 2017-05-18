@@ -23,7 +23,8 @@ def find_version(*file_paths):
 
 
 requires = ['boto3==1.4.4',
-            'botocore==1.5.40']
+            'botocore==1.5.40',
+            'future']
 
 
 if sys.version_info[:2] == (2, 6):
