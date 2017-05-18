@@ -1,0 +1,12 @@
+.envrc
+.python-version
+.vscode
+*.py[co]
+build
+dist
+__pycache__
+.DS_Store
+*.egg-info
+
+# IntelliJ / PyCharm IDE
+.idea/

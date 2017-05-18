@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import subprocess
 import os
 import argparse
@@ -16,16 +14,14 @@ except ImportError:
 DEFAULT_USERNAME = 'ec2-user'
 DEFAULT_KEY_PATH = '~/.ssh/{}.pem'
 
-SSH_OPTION = '-o StrictHostKeyChecking=no'
-
 def parse_args():
     parser = argparse.ArgumentParser(description='Simple argparse CLI')
-    parser.add_argument('-k', '--key-path', dest='key_path', help='Specify private key path', default=os.environ.get('KEY_PATH'), required=False)
-    parser.add_argument('-u', '--username', dest='username', help='Specify login user name', default=os.environ.get('USERNAME'), required=False)
-    parser.add_argument('-b', '--bastion-name', dest='bastion_name', help='Specify bastion instance name', default=os.environ.get('BASTION_NAME'), required=False)
-    parser.add_argument('-e', '--bastion-key-path', dest='bastion_key_path', help='Specify bastion private key path', default=os.environ.get('BASTION_KEY_PATH'), required=False)
-    parser.add_argument('-s', '--bastion-username', dest='bastion_username', help='Specify bastion user name', default=os.environ.get('BASTION_USERNAME'), required=False)
-    parser.add_argument('-p', '--profile', dest='profile', help='Specify profile name for AWS credentials', default=os.environ.get('AWS_PROFILE'), required=False)
+    parser.add_argument('-k', '--key-path', dest='key_path', help='Specify private key path', default=os.environ.get('EC2SSH_KEY_PATH'), required=False)
+    parser.add_argument('-u', '--username', dest='username', help='Specify login user name', default=os.environ.get('EC2SSH_USERNAME'), required=False)
+    parser.add_argument('-b', '--bastion-name', dest='bastion_name', help='Specify bastion instance name', default=os.environ.get('EC2SSH_BASTION_NAME'), required=False)
+    parser.add_argument('-e', '--bastion-key-path', dest='bastion_key_path', help='Specify bastion private key path', default=os.environ.get('EC2SSH_BASTION_KEY_PATH'), required=False)
+    parser.add_argument('-s', '--bastion-username', dest='bastion_username', help='Specify bastion user name', default=os.environ.get('EC2SSH_BASTION_USERNAME'), required=False)
+    parser.add_argument('-p', '--profile', dest='profile', help='Specify profile name for AWS credentials', default=os.environ.get('EC2SSH_AWS_PROFILE'), required=False)
     return parser.parse_args()
 
 def get_instance_name(instance):
@@ -50,41 +46,28 @@ def describe_instances(profile, bastion_name):
         for reservation in result['Reservations']
         for instance in reservation['Instances']
     ]
-    sorted_instances = sorted(desc_instances, key=lambda i:get_instance_name(i))
-    instances = [
-        (num, instance)
-        for num, instance in enumerate(sorted_instances)
-    ]
+    instances = sorted(desc_instances, key=lambda i:get_instance_name(i))
 
     display_instances(instances)
 
     bastion_instance = None
     if bastion_name:
-        bastion_instance = [ instance[1]
+        bastion_instance = [ instance
             for instance in instances
-            if get_instance_name(instance[1]) == bastion_name ][0]
+            if get_instance_name(instance) == bastion_name ][0]
         if not bastion_instance:
             raise Exception("Don't exist specify bastion instance.")
 
     return bastion_instance, instances
 
 
-def display_instances(instances):
+def display_instances(instances, keyword=''):
     subprocess.call('clear')
     print('[ TARGET INSTANCE LIST ]')
-    if not instances:
-        print('instance include inputed name does not exist')
 
-    for i in instances:
-        print('\033[30;43m{0:3}\033[0m: {1} ({2})'.format(i[0], get_instance_name(i[1]), i[1]['InstanceId']))
-
-
-def search_instances(instances, number):
-    display_instances([
-        instance
-        for instance in instances
-        if number in get_instance_name(instance[1]) 
-    ])
+    for num, instance in enumerate(instances):
+        if not keyword or keyword in get_instance_name(instance):
+            print('\033[30;43m{0:3}\033[0m: {1} ({2})'.format(num, get_instance_name(instance), instance['InstanceId']))
 
 
 def validate_input(instances, number):
@@ -108,7 +91,7 @@ def _generate_access(instance, key_path, username, public=True):
     else:
         host = instance['PrivateIpAddress']
 
-    return '-i {} {}@{} {}'.format(key_path, username, host, SSH_OPTION)
+    return '-i {} {}@{}'.format(key_path, username, host)
 
 
 def connect(instance, key_path, username, bastion_instance, bastion_key_path, bastion_username):
@@ -129,15 +112,14 @@ def main():
     args = parse_args()
     
     bastion_instance, instances = describe_instances(args.profile, args.bastion_name)
-    # instance = read_input(instances)
 
     number = input('input number ( if filter, input name part ) : ')
 
     while not validate_input(instances, number):
-        search_instances(instances, number)
+        display_instances(instances, number)
         number = input('input number ( if filter, input name part ) : ')
     
-    instance = instances[int(number)][1]
+    instance = instances[int(number)]
 
     connect(instance, args.key_path, args.username, bastion_instance, args.bastion_key_path, args.bastion_username)
 
