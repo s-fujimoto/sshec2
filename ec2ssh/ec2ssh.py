@@ -22,6 +22,7 @@ def parse_args():
     parser.add_argument('-e', '--bastion-key-path', dest='bastion_key_path', help='Specify bastion private key path', default=os.environ.get('EC2SSH_BASTION_KEY_PATH'), required=False)
     parser.add_argument('-s', '--bastion-username', dest='bastion_username', help='Specify bastion user name', default=os.environ.get('EC2SSH_BASTION_USERNAME'), required=False)
     parser.add_argument('-p', '--profile', dest='profile', help='Specify profile name for AWS credentials', default=os.environ.get('EC2SSH_AWS_PROFILE'), required=False)
+    parser.add_argument('-v', '--vpn-interface', dest='vif', help='Specify interface name for vpn', default=os.environ.get('EC2SSH_VPN_INTERFACE'), required=False)
     return parser.parse_args()
 
 def get_instance_name(instance):
@@ -78,7 +79,7 @@ def validate_input(instances, number):
     return 0 <= number < len(instances)
 
 
-def _generate_access(instance, key_path, username, public=True):
+def _generate_access(instance, key_path, username, vif, public=True):
     if not username:
         username = DEFAULT_USERNAME
     
@@ -88,22 +89,27 @@ def _generate_access(instance, key_path, username, public=True):
     
     if public:
         host = instance['PublicIpAddress']
+        if vif:
+            p = subprocess.Popen('netstat -rn', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            out, err = p.communicate()
+            if not host in out.decode('utf-8'):
+                subprocess.call('sudo route add {}/32 -interface {}'.format(host, vif), shell=True)
     else:
         host = instance['PrivateIpAddress']
 
     return '-i {} {}@{}'.format(key_path, username, host)
 
 
-def connect(instance, key_path, username, bastion_instance, bastion_key_path, bastion_username):
+def connect(instance, key_path, username, bastion_instance, bastion_key_path, bastion_username, vif):
     commands = ['ssh']
 
     ### bastion
     if bastion_instance:
         commands.extend(['-o', 'ProxyCommand="ssh -W %h:%p {}"'.format(
-            _generate_access(bastion_instance, bastion_key_path, bastion_username))])
+            _generate_access(bastion_instance, bastion_key_path, bastion_username, vif))])
     
     ### target
-    commands.append(_generate_access(instance, key_path, username, bastion_instance==None))
+    commands.append(_generate_access(instance, key_path, username, vif, bastion_instance==None))
 
     subprocess.call(" ".join(commands), shell=True)
 
@@ -121,7 +127,7 @@ def main():
     
     instance = instances[int(number)]
 
-    connect(instance, args.key_path, args.username, bastion_instance, args.bastion_key_path, args.bastion_username)
+    connect(instance, args.key_path, args.username, bastion_instance, args.bastion_key_path, args.bastion_username, args.vif)
 
 
 if __name__ == '__main__':

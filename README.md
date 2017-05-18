@@ -39,35 +39,38 @@ optional arguments:
                         Specify profile name for AWS credentials
 ```
 
-```-k, --key-path```
+```-k, --key-path```  
 Specify private key file path. 
 * Default ```$HOME/.ssh/<<INSTANCE_KEY_PAIR_NAME>>.pem```
 * ENVIRONMENT_KEY : ```KEY_PATH```
 
-```-u, --username```
+```-u, --username```  
 Specify login username.
 * Default ```ec2-user```
 * ENVIRONMENT_KEY : ```EC2SSH_USERNAME```
 
-```-p, --profile```
+```-p, --profile```  
 Specify aws credential profile name.
 aws credential file is ```$HOME/.aws/credential```
 * ENVIRONMENT_KEY : ```EC2SSH_AWS_PROFILE```
 
-```-b, --bastion-name```
+```-b, --bastion-name```  
 If ssh access via bastion, specify bastion instance name.
 * ENVIRONMENT_KEY : ```EC2SSH_BASTION_NAME```
 
-```-e, --bastion-key-path```
+```-e, --bastion-key-path```  
 If ssh access via bastion, specify bastion private key file path.
 * Default ```$HOME/.ssh/<<BASTION_INSTANCE_KEY_PAIR_NAME>>.pem```
 * ENVIRONMENT_KEY : ```EC2SSH_BASTION_KEY_PATH```
 
-```-s, --bastion-username```
+```-s, --bastion-username```  
 If ssh access via bastion, specify bastion login username.
 * Default ```ec2-user```
 * ENVIRONMENT_KEY : ```EC2SSH_BASTION_USERNAME```
 
+```-v, --vpn-interface```  
+If ssh access via vpn connection, specify vpn interface name.
+* ENVIRONMENT_KEY : ```EC2SSH_VPN_INTERFACE```
 
 ### Installation
 Install from github repository.
