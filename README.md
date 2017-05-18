@@ -20,8 +20,9 @@ Command option. Option setting is available for Environment.
 $ ec2ssh --help
 usage: ec2ssh [-h] [-k KEY_PATH] [-u USERNAME] [-b BASTION_NAME]
               [-e BASTION_KEY_PATH] [-s BASTION_USERNAME] [-p PROFILE]
+              [-v VIF]
 
-SSH login utility for Amazon EC2 instance.
+Simple argparse CLI
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -37,6 +38,8 @@ optional arguments:
                         Specify bastion user name
   -p PROFILE, --profile PROFILE
                         Specify profile name for AWS credentials
+  -v VIF, --vpn-interface VIF
+                        Specify interface name for vpn
 ```
 
 ```-k, --key-path```  
