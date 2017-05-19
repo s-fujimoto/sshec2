@@ -1,6 +1,6 @@
 # ec2ssh
 
-SSH login utility for Amazon EC2 instance.
+SSH login utility for Amazon EC2 instance. Test only OSX.
 
 ![](https://raw.githubusercontent.com/s-fujimoto/ec2ssh/master/ec2ssh.gif)
 
@@ -74,6 +74,52 @@ If ssh access via bastion, specify bastion login username.
 ```-v, --vpn-interface```  
 If ssh access via vpn connection, specify vpn interface name.
 * ENVIRONMENT_KEY : ```EC2SSH_VPN_INTERFACE```
+
+### Usage
+Only exec command ```ec2ssh```
+
+#### Use not default profile (AWS credential)
+ec2ssh using default profile is ```default```.  
+ec2ssh is able to not default profile. ec2ssh searches profile name in ```~/.aws/credentials```.   
+
+For example...  
+- profile name : profile1
+
+```
+$ ec2ssh -p profile1
+```
+
+#### via bastion
+Nested SSH login. 
+Local -(public access)-> Bastion -(private aceess)-> Target
+
+For example...
+- Bastion instance name : bastion
+- Bastion instance key pair path : ~/.ssh/bastion.pem
+- Bastion instance user name : root
+
+```
+$ ec2ssh -b bastion -e ~/.ssh/bastion.pem -s root 
+```
+
+#### via vpn connection
+Access via vpn connection. Add target instance having public ip address rule to local routing table. Exec ```sudo route add <target_ip>/32 -interface <vpn_interface_name>```  
+Local -(VPN routing)-> Bastion
+
+For example...  
+- VPN interface name : utun2
+
+```
+$ ifconfig
+<snip>
+utun2: flags=8051<UP,POINTOPOINT,RUNNING,MULTICAST> mtu 1500
+	inet 192.168.0.100 --> 192.168.0.100 netmask 0xffffffff
+
+$ ec2ssh -v utun2
+<select target instance number>
+Input sudo password if required sudo password.
+Password: <input sudo password>
+```
 
 ### Installation
 Install from github repository.
