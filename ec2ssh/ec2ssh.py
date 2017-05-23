@@ -64,7 +64,7 @@ def display_instances(instances, target, keyword=''):
 
     for num, instance in enumerate(instances):
         if keyword in get_instance_name(instance) and (target == 'TARGET' or (target == 'BASTION' and instance.get('PublicIpAddress'))):
-            print('\033[30;43m{0:3}\033[0m: {1} ({2})'.format(num, get_instance_name(instance), instance['InstanceId']))
+            print('\033[30;43m{0:3}\033[0m: {1} ({2}) {3}'.format(num, get_instance_name(instance), instance['InstanceId'], instance['Placement']['AvailabilityZone'][:-1]))
 
 
 def validate_input(instances, number):
