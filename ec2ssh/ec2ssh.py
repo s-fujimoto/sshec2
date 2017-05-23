@@ -143,7 +143,3 @@ def main():
     instance = select_instance(instances, 'TARGET')
 
     connect(instance, args.key_path, args.username, bastion_instance, args.bastion_key_path, args.bastion_username, args.vif)
-
-
-if __name__ == '__main__':
-    main()
