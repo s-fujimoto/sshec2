@@ -128,6 +128,7 @@ def main():
     instances = describe_instances(args.profile, args.bastion_name)
 
     ### bastion
+    bastion_instance = None
     if args.bastion_name:
         bastion_instance = [ instance
             for instance in instances
@@ -136,10 +137,9 @@ def main():
             raise Exception("Don't exist specify bastion instance.")
     elif args.bastion:
         bastion_instance = select_instance(instances, 'BASTION')
-    else:
-        bastion_instance = None
 
     ### target
     instance = select_instance(instances, 'TARGET')
 
+    ### connect
     connect(instance, args.key_path, args.username, bastion_instance, args.bastion_key_path, args.bastion_username, args.vif)
