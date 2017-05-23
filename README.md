@@ -19,9 +19,9 @@ Command option. Option setting is available for Environment.
 
 ```
 $ ec2ssh --help
-usage: ec2ssh [-h] [-k KEY_PATH] [-u USERNAME] [-b BASTION_NAME]
+usage: ec2ssh [-h] [-k KEY_PATH] [-u USERNAME] [--bastion] [-b BASTION_NAME]
               [-e BASTION_KEY_PATH] [-s BASTION_USERNAME] [-p PROFILE]
-              [-v VIF]
+              [-v VIF] [-r REGION]
 
 Simple argparse CLI
 
@@ -31,6 +31,7 @@ optional arguments:
                         Specify private key path
   -u USERNAME, --username USERNAME
                         Specify login user name
+  --bastion             Enabled selecting bastion mode
   -b BASTION_NAME, --bastion-name BASTION_NAME
                         Specify bastion instance name
   -e BASTION_KEY_PATH, --bastion-key-path BASTION_KEY_PATH
@@ -41,6 +42,8 @@ optional arguments:
                         Specify profile name for AWS credentials
   -v VIF, --vpn-interface VIF
                         Specify interface name for vpn
+  -r REGION, --region REGION
+                        Specify region name
 ```
 
 ```-k, --key-path```  
@@ -57,6 +60,9 @@ Specify login username.
 Specify aws credential profile name.
 aws credential file is ```$HOME/.aws/credential```
 * ENVIRONMENT_KEY : ```EC2SSH_AWS_PROFILE```
+
+```--bastion```
+Select bastion mode.
 
 ```-b, --bastion-name```  
 If ssh access via bastion, specify bastion instance name.
@@ -75,6 +81,11 @@ If ssh access via bastion, specify bastion login username.
 ```-v, --vpn-interface```  
 If ssh access via vpn connection, specify vpn interface name.
 * ENVIRONMENT_KEY : ```EC2SSH_VPN_INTERFACE```
+
+```-r, --region```
+Region name of logging in EC2 instances.
+ex. ap-northeast-1, us-east-1 etc
+* ENVIRONMENT_KEY : ```EC2SSH_AWS_REGION```
 
 ### Usage
 Only exec command ```ec2ssh```

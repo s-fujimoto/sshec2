@@ -16,16 +16,19 @@ except ImportError:
 
 DEFAULT_USERNAME = 'ec2-user'
 DEFAULT_KEY_PATH = '~/.ssh/{}.pem'
+INPUT_MESSAGE = 'input number ( if filter, input name part. if abort, input \'q\' ) : '
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Simple argparse CLI')
     parser.add_argument('-k', '--key-path', dest='key_path', help='Specify private key path', default=os.environ.get('EC2SSH_KEY_PATH'), required=False)
     parser.add_argument('-u', '--username', dest='username', help='Specify login user name', default=os.environ.get('EC2SSH_USERNAME'), required=False)
+    parser.add_argument('--bastion', dest='bastion', help='Enabled selecting bastion mode', action="store_true", required=False)
     parser.add_argument('-b', '--bastion-name', dest='bastion_name', help='Specify bastion instance name', default=os.environ.get('EC2SSH_BASTION_NAME'), required=False)
     parser.add_argument('-e', '--bastion-key-path', dest='bastion_key_path', help='Specify bastion private key path', default=os.environ.get('EC2SSH_BASTION_KEY_PATH'), required=False)
     parser.add_argument('-s', '--bastion-username', dest='bastion_username', help='Specify bastion user name', default=os.environ.get('EC2SSH_BASTION_USERNAME'), required=False)
     parser.add_argument('-p', '--profile', dest='profile', help='Specify profile name for AWS credentials', default=os.environ.get('EC2SSH_AWS_PROFILE'), required=False)
     parser.add_argument('-v', '--vpn-interface', dest='vif', help='Specify interface name for vpn', default=os.environ.get('EC2SSH_VPN_INTERFACE'), required=False)
+    parser.add_argument('-r', '--region', dest='region', help='Specify region name', default=os.environ.get('EC2SSH_AWS_REGION'), required=False)
     return parser.parse_args()
 
 def get_instance_name(instance):
@@ -52,25 +55,15 @@ def describe_instances(profile, bastion_name):
     ]
     instances = sorted(desc_instances, key=lambda i:get_instance_name(i))
 
-    display_instances(instances)
-
-    bastion_instance = None
-    if bastion_name:
-        bastion_instance = [ instance
-            for instance in instances
-            if get_instance_name(instance) == bastion_name ][0]
-        if not bastion_instance:
-            raise Exception("Don't exist specify bastion instance.")
-
-    return bastion_instance, instances
+    return instances
 
 
-def display_instances(instances, keyword=''):
+def display_instances(instances, target, keyword=''):
     subprocess.call('clear')
-    print('[ TARGET INSTANCE LIST ]')
+    print('[ SELECT {} INSTANCE LIST ]'.format(target))
 
     for num, instance in enumerate(instances):
-        if not keyword or keyword in get_instance_name(instance):
+        if keyword in get_instance_name(instance) and (target == 'TARGET' or (target == 'BASTION' and instance.get('PublicIpAddress'))):
             print('\033[30;43m{0:3}\033[0m: {1} ({2})'.format(num, get_instance_name(instance), instance['InstanceId']))
 
 
@@ -120,18 +113,34 @@ def connect(instance, key_path, username, bastion_instance, bastion_key_path, ba
     subprocess.call(" ".join(commands), shell=True)
 
 
+def select_instance(instances, target):
+    display_instances(instances, target)
+    number = input(INPUT_MESSAGE)
+
+    while not validate_input(instances, number):
+        display_instances(instances, target, number)
+        number = input(INPUT_MESSAGE)
+    return instances[int(number)]
+
 def main():
     args = parse_args()
     
-    bastion_instance, instances = describe_instances(args.profile, args.bastion_name)
+    instances = describe_instances(args.profile, args.bastion_name)
 
-    number = input('input number ( if filter, input name part. if abort, input \'q\' ) : ')
+    ### bastion
+    if args.bastion_name:
+        bastion_instance = [ instance
+            for instance in instances
+            if get_instance_name(instance) == args.bastion_name ][0]
+        if not bastion_instance:
+            raise Exception("Don't exist specify bastion instance.")
+    elif args.bastion:
+        bastion_instance = select_instance(instances, 'BASTION')
+    else:
+        bastion_instance = None
 
-    while not validate_input(instances, number):
-        display_instances(instances, number)
-        number = input('input number ( if filter, input name part. if abort, input \'q\' ) : ')
-    
-    instance = instances[int(number)]
+    ### target
+    instance = select_instance(instances, 'TARGET')
 
     connect(instance, args.key_path, args.username, bastion_instance, args.bastion_key_path, args.bastion_username, args.vif)
 
