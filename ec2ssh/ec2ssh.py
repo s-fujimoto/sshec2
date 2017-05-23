@@ -2,6 +2,7 @@ from __future__ import print_function
 from builtins import input
 
 import subprocess
+import sys
 import os
 import argparse
 try:
@@ -11,7 +12,6 @@ except ImportError:
     print('ERROR : Please install boto3. Please exec following commad.')
     print('pip install boto3')
     print('*******************************')
-    import sys
     sys.exit(1)
 
 DEFAULT_USERNAME = 'ec2-user'
@@ -75,6 +75,8 @@ def display_instances(instances, keyword=''):
 
 
 def validate_input(instances, number):
+    if number == 'q':
+        sys.exit(0)
     try:
         number = int(number)
     except ValueError:
@@ -123,11 +125,11 @@ def main():
     
     bastion_instance, instances = describe_instances(args.profile, args.bastion_name)
 
-    number = input('input number ( if filter, input name part ) : ')
+    number = input('input number ( if filter, input name part. if abort, input \'q\' ) : ')
 
     while not validate_input(instances, number):
         display_instances(instances, number)
-        number = input('input number ( if filter, input name part ) : ')
+        number = input('input number ( if filter, input name part. if abort, input \'q\' ) : ')
     
     instance = instances[int(number)]
 

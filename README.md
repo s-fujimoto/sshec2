@@ -10,6 +10,7 @@ SSH login utility for Amazon EC2 instance. Test only OSX.
     - Name tag and instance ID
 - search and filter instance by name
 - access via specify bastion
+- access via vpn connection
 - specify key name
 - specify username
 
