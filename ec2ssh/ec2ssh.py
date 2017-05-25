@@ -130,11 +130,16 @@ def main():
     ### bastion
     bastion_instance = None
     if args.bastion_name:
-        bastion_instance = [ instance
+        bastion_instances = [ instance
             for instance in instances
-            if get_instance_name(instance) == args.bastion_name ][0]
-        if not bastion_instance:
-            raise Exception("Don't exist specify bastion instance.")
+            if get_instance_name(instance) == args.bastion_name ]
+        if not bastion_instances:
+            print("[WARN] Don't exist specified name instance.")
+            sys.exit(1)
+        elif len(bastion_instances) > 1:
+            print("[WARN] Specified name instance exists two or more.")
+            sys.exit(1)
+        bastion_instance = bastion_instances[0]
     elif args.bastion:
         bastion_instance = select_instance(instances, 'BASTION')
 
