@@ -8,6 +8,7 @@ __pycache__
 .DS_Store
 *.egg-info
 .cache
+.coverage
 
 # IntelliJ / PyCharm IDE
 .idea/
