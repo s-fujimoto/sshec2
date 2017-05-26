@@ -1,5 +1,6 @@
 # ec2ssh
 [![Build Status](https://travis-ci.org/s-fujimoto/ec2ssh.svg?branch=master)](https://travis-ci.org/s-fujimoto/ec2ssh)
+[![codecov](https://codecov.io/gh/s-fujimoto/ec2ssh/branch/master/graph/badge.svg)](https://codecov.io/gh/s-fujimoto/ec2ssh)
 
 SSH login utility for Amazon EC2 instance. Test only OSX.
 
