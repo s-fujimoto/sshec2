@@ -4,18 +4,9 @@ branches:
   only:
     - master
 
-python:
-  - 2.7
-  - 3.3
-  - 3.4
-  - 3.5
-  - 3.6
-
 install:
-  - python setup.py install
   - pip install -r test-requirements.txt
-  - pip install --user codecov pytest-cov
 script: 
-  - py.test --cov=ec2ssh --cov-report=xml
-after_success:
-  - codecov
+  - tox
+# after_success:
+#   - codecov
