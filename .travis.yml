@@ -18,6 +18,6 @@ matrix:
       env: TOX_ENV=py36
 
 install: pip install -r test-requirements.txt
-script: tox -e ${TOX_ENV}
+script: tox
 after_success:
-  - codecov
+  - tox -e codecov
