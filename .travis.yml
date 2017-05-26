@@ -5,13 +5,16 @@ branches:
     - master
 
 python:
- - 2.7
- - 3.3
- - 3.4
- - 3.5
- - 3.6
+  - 2.7
+  - 3.3
+  - 3.4
+  - 3.5
+  - 3.6
 
 install: pip install -r test-requirements.txt
-script: py.test --cov=ec2ssh
+script: 
+  - pwd
+  - ls -al
+  - py.test --cov=ec2ssh
 after_success:
   - codecov
