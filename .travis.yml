@@ -11,10 +11,10 @@ python:
   - 3.5
   - 3.6
 
-install: pip install -r test-requirements.txt
+install:
+  - python setup.py install
+  - pip install -r test-requirements.txt
 script: 
-  - pwd
-  - ls -al
-  - py.test --cov=ec2ssh
+  - pytest --cov=ec2ssh
 after_success:
   - codecov
