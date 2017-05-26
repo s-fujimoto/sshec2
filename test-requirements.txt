@@ -1,3 +1,5 @@
 tox
 codecov
 coverage
+pytest
+pytest-cov

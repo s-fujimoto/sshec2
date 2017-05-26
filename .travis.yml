@@ -12,7 +12,6 @@ python:
  - 3.6
 
 install: pip install -r test-requirements.txt
-script: tox
+script: py.test --cov=ec2ssh
 after_success:
-  - coverage combine
   - codecov
