@@ -3,4 +3,3 @@ codecov
 coverage
 pytest
 pytest-cov
-boto3

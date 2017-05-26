@@ -14,7 +14,8 @@ python:
 install:
   - python setup.py install
   - pip install -r test-requirements.txt
+  - pip list
 script: 
-  - pytest --cov=ec2ssh
+  - pytest --cov=ec2ssh --cov-report=xml
 after_success:
   - codecov
