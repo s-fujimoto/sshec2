@@ -13,6 +13,9 @@ SSH login utility for Amazon EC2 instance. Test only OSX.
 - access via vpn connection
 - specify key name
 - specify username
+- transfer file via scp
+    - from EC2 to local
+    - from local to EC2
 
 ### Option
 Command option. Option setting is available for Environment.
@@ -21,7 +24,9 @@ Command option. Option setting is available for Environment.
 $ ec2ssh --help
 usage: ec2ssh [-h] [-k KEY_PATH] [-u USERNAME] [--bastion] [-b BASTION_NAME]
               [-e BASTION_KEY_PATH] [-s BASTION_USERNAME] [-p PROFILE]
-              [-v VIF] [-r REGION]
+              [-v VIF] [-r REGION] [--scp-to-ec2] [--scp-from-ec2]
+              [--source-path SOURCE_PATH] [--target-path TARGET_PATH]
+              [--debug]
 
 Simple argparse CLI
 
@@ -44,6 +49,13 @@ optional arguments:
                         Specify interface name for vpn
   -r REGION, --region REGION
                         Specify region name
+  --scp-to-ec2          SCP from local to EC2 mode
+  --scp-from-ec2        SCP from EC2 to local mode
+  --source-path SOURCE_PATH
+                        Specify source path
+  --target-path TARGET_PATH
+                        Specify target path
+  --debug               logging debug mode
 ```
 
 ```-k, --key-path```  
@@ -86,6 +98,21 @@ If ssh access via vpn connection, specify vpn interface name.
 Region name of logging in EC2 instances.
 ex. ap-northeast-1, us-east-1 etc
 * ENVIRONMENT_KEY : ```EC2SSH_AWS_REGION```
+
+```--scp-to-ec2```
+SCP from local to EC2 mode
+
+```--scp-from-ec2```
+SCP from EC2 to local mode
+
+```--src-path```
+**SCP Mode option** Specify source path
+
+```--dst-path```
+**SCP Mode option** Specify target path
+
+```--debug```
+logging debug mode
 
 ### Usage
 Only exec command ```ec2ssh```
@@ -131,6 +158,20 @@ $ ec2ssh -v utun2
 <select target instance number>
 Input sudo password if required sudo password.
 Password: <input sudo password>
+```
+
+#### SCP Mode
+Transfer directory or file by SCP command. Exec (From local to EC2).  
+```scp -r <source_path> <target_ip>:<destination_path>```  
+Support to transfer via bastion.
+
+For example transfer to EC2 from local.
+
+- Source File : README.md
+- Destination Directory : /tmp/
+
+```
+$ ec2ssh --scp-to --src README.md --dst /tmp/
 ```
 
 ### Installation
