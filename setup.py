@@ -27,12 +27,6 @@ requires = ['boto3==1.4.4',
             'future']
 
 
-if sys.version_info[:2] == (2, 6):
-    # For python2.6 we have to require argparse since it
-    # was not in stdlib until 2.7.
-    requires.append('argparse>=1.1')
-
-
 setup_options = dict(
     name='ec2ssh',
     version=find_version("ec2ssh", "__init__.py"),
@@ -43,11 +37,6 @@ setup_options = dict(
     packages=find_packages(exclude=['tests*']),
     include_package_data=True,
     install_requires=requires,
-    extras_require={
-        ':python_version=="2.6"': [
-            'argparse>=1.1',
-        ]
-    },
     license="Apache License 2.0",
     classifiers=(
         'Development Status :: 5 - Production/Stable',
