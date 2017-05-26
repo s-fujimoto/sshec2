@@ -20,4 +20,5 @@ matrix:
 install: pip install -r test-requirements.txt
 script: tox
 after_success:
-  - tox -e codecov
+  - coverage combine
+  - codecov
