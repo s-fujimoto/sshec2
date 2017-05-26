@@ -1,5 +1,4 @@
-tox
-codecov
-coverage
+botocore==1.5.40
+boto3==1.4.4
+future
 pytest
-pytest-cov
