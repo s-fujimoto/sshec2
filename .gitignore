@@ -9,6 +9,7 @@ __pycache__
 *.egg-info
 .cache
 .coverage*
+coverage.xml
 .tox
 
 # IntelliJ / PyCharm IDE
