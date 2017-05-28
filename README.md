@@ -7,6 +7,12 @@ SSH login utility for Amazon EC2 instance. Test only OSX.
 
 ![](https://raw.githubusercontent.com/s-fujimoto/ec2ssh/master/ec2ssh.gif)
 
+# Documentation
+
+Japanese document page.
+
+##### [http://ec2ssh.readthedocs.io/ja/latest/](http://ec2ssh.readthedocs.io/ja/latest/)
+
 ### Support python version
 - 2.7
 - 3.3
