@@ -1,8 +1,8 @@
-# Introduction
+# ec2ssh
 
-ec2ssh は Amazon EC2 for Linux へ SSH ログインするためのツールです。
+ec2ssh は Amazon EC2 for Linux へ SSH ログインを簡単にするためのツールです。
 
-# 機能
+## 機能
 
 ec2ssh は下記機能を提供します。
 

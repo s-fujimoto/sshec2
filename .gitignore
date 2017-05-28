@@ -11,6 +11,7 @@ __pycache__
 .coverage*
 coverage.xml
 .tox
+docs/build
 
 # IntelliJ / PyCharm IDE
 .idea/
