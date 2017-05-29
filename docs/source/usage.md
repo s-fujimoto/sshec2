@@ -65,3 +65,6 @@ Amazon Linux version 2017.03 is available.
 [ec2-user@ip-172-31-0-100 ~]$
 ```
 
+## ログイン対象インスタンスのフィルタ表示
+
+sshec2 の一覧表示は起動中の全ての EC2 インスタンスを表示します。
