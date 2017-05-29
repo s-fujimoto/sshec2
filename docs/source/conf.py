@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# ec2ssh documentation build configuration file, created by
-# sphinx-quickstart on Sun May 28 17:22:02 2017.
+# sshec2 documentation build configuration file, created by
+# sphinx-quickstart on Mon May 29 11:44:00 2017.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
@@ -20,6 +20,7 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
+
 
 # -- General configuration ------------------------------------------------
 
@@ -39,16 +40,15 @@ templates_path = ['_templates']
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = ['.rst', '.md']
-#source_suffix = '.rst'
-source_suffix = ['.rst', '.md']
 from recommonmark.parser import CommonMarkParser
 source_parsers = {'.md': CommonMarkParser}
+source_suffix = ['.rst', '.md']
 
 # The master toctree document.
 master_doc = 'index'
 
 # General information about the project.
-project = 'ec2ssh'
+project = 'sshec2'
 copyright = '2017, Shinji Fujimoto'
 author = 'Shinji Fujimoto'
 
@@ -66,7 +66,7 @@ release = '0.1.0'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = 'en'
+language = 'ja'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -85,6 +85,7 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
+#html_theme = 'alabaster'
 html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -102,7 +103,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'ec2sshdoc'
+htmlhelp_basename = 'sshec2doc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -129,7 +130,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'ec2ssh.tex', 'ec2ssh Documentation',
+    (master_doc, 'sshec2.tex', 'sshec2 Documentation',
      'Shinji Fujimoto', 'manual'),
 ]
 
@@ -139,7 +140,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'ec2ssh', 'ec2ssh Documentation',
+    (master_doc, 'sshec2', 'sshec2 Documentation',
      [author], 1)
 ]
 
@@ -150,8 +151,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'ec2ssh', 'ec2ssh Documentation',
-     author, 'ec2ssh', 'One line description of project.',
+    (master_doc, 'sshec2', 'sshec2 Documentation',
+     author, 'sshec2', 'One line description of project.',
      'Miscellaneous'),
 ]
 

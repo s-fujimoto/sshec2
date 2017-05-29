@@ -4,7 +4,7 @@
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = python -msphinx
-SPHINXPROJ    = ec2ssh
+SPHINXPROJ    = sshec2
 SOURCEDIR     = source
 BUILDDIR      = build
 

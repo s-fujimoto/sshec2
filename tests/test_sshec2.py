@@ -1,7 +1,7 @@
 import pytest
 import datetime
 from dateutil.tz import tzutc
-from ec2ssh import ec2ssh
+from sshec2 import sshec2
 
 instances_data = [
     {'AmiLaunchIndex': 0,
@@ -209,7 +209,7 @@ instances_data = [
 
 @pytest.mark.parametrize("instance,expected", [(i, 'INSTANCE00'+str(num)) for num, i in enumerate(instances_data)])
 def test_get_instance_name(instance, expected):
-    assert ec2ssh.get_instance_name(instance) == expected
+    assert sshec2.get_instance_name(instance) == expected
 
 validate_data = [
     (instances_data, 0, True),
@@ -222,7 +222,7 @@ validate_data = [
 
 @pytest.mark.parametrize("instances,number,expected", validate_data)
 def test_validate_input(instances, number, expected):
-    assert ec2ssh.validate_input(instances, number) == expected
+    assert sshec2.validate_input(instances, number) == expected
 
 setting_bastion_data = [
     (instances_data, 'INSTANCE000', False, '0.0.0.0'),
@@ -231,7 +231,7 @@ setting_bastion_data = [
 
 @pytest.mark.parametrize("instances,bastion_name,bastion,expected", setting_bastion_data)
 def test_setting_bastion(instances, bastion_name, bastion, expected):
-    bastion = ec2ssh.setting_bastion(instances, bastion_name, bastion)
+    bastion = sshec2.setting_bastion(instances, bastion_name, bastion)
     assert bastion['PublicIpAddress'] == expected
 
 get_key_path_data = [
@@ -241,7 +241,7 @@ get_key_path_data = [
 
 @pytest.mark.parametrize("instance,key_path,expected", get_key_path_data)
 def test_get_key_path(instance, key_path, expected):
-    assert ec2ssh.get_key_path(instance, key_path) == expected
+    assert sshec2.get_key_path(instance, key_path) == expected
 
 get_username_data = [
     (instances_data[0], None, 'ec2-user'),
@@ -250,7 +250,7 @@ get_username_data = [
 
 @pytest.mark.parametrize("instance,username,expected", get_username_data)
 def test_get_username(instance, username, expected):
-    assert ec2ssh.get_username(instance, username) == expected
+    assert sshec2.get_username(instance, username) == expected
 
 get_host_data = [
     (instances_data[2], True, '2.2.2.2'),
@@ -259,7 +259,7 @@ get_host_data = [
 
 @pytest.mark.parametrize("instance,public,expected", get_host_data)
 def test_get_host(instance, public, expected):
-    assert ec2ssh.get_host(instance, public) == expected
+    assert sshec2.get_host(instance, public) == expected
 
 target_command_data = [
     (instances_data[1], None, None, True, '-i ~/.ssh/keypair1.pem ec2-user@1.1.1.1'),
@@ -270,7 +270,7 @@ target_command_data = [
 
 @pytest.mark.parametrize("instance,key_path,username,public,expected", target_command_data)
 def test_target_command(instance, key_path, username, public, expected):
-    assert ec2ssh.target_command(instance, key_path, username, public) == expected
+    assert sshec2.target_command(instance, key_path, username, public) == expected
 
 bastion_commands_data = [
     (instances_data[0], None, None, ['-o', 'ProxyCommand="ssh -W %h:%p -i ~/.ssh/keypair0.pem ec2-user@0.0.0.0"']),
@@ -281,7 +281,7 @@ bastion_commands_data = [
 
 @pytest.mark.parametrize("instance,key_path,username,expected", bastion_commands_data)
 def test_bastion_commands(instance, key_path, username, expected):
-    assert ec2ssh.bastion_commands(instance, key_path, username) == expected
+    assert sshec2.bastion_commands(instance, key_path, username) == expected
 
 generate_scp_command_data = [
     (instances_data[0], None, None, None, None, None, 'from.txt', '/to/', True, False, 'scp -r -i ~/.ssh/keypair0.pem ec2-user@0.0.0.0:from.txt /to/'),
@@ -292,7 +292,7 @@ generate_scp_command_data = [
 
 @pytest.mark.parametrize("instance,key_path,username,bastion_instance,bastion_key_path,bastion_username,src_path,dst_path,scp_from,scp_to,expected", generate_scp_command_data)
 def test_generate_scp_command(instance, key_path, username, bastion_instance, bastion_key_path, bastion_username, src_path, dst_path, scp_from, scp_to, expected):
-    assert ec2ssh.generate_scp_command(instance, key_path, username, bastion_instance, bastion_key_path, bastion_username, src_path, dst_path, scp_from, scp_to) == expected
+    assert sshec2.generate_scp_command(instance, key_path, username, bastion_instance, bastion_key_path, bastion_username, src_path, dst_path, scp_from, scp_to) == expected
 
 generate_ssh_command_data = [
     (instances_data[0], None, None, None, None, None, 'ssh -i ~/.ssh/keypair0.pem ec2-user@0.0.0.0'),
@@ -303,4 +303,4 @@ generate_ssh_command_data = [
 
 @pytest.mark.parametrize("instance,key_path,username,bastion_instance,bastion_key_path,bastion_username,expected", generate_ssh_command_data)
 def test_generate_ssh_command(instance, key_path, username, bastion_instance, bastion_key_path, bastion_username, expected):
-    assert ec2ssh.generate_ssh_command(instance, key_path, username, bastion_instance, bastion_key_path, bastion_username) == expected
+    assert sshec2.generate_ssh_command(instance, key_path, username, bastion_instance, bastion_key_path, bastion_username) == expected

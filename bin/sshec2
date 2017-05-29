@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import ec2ssh.ec2ssh
+import sshec2.sshec2
 
 if __name__ == '__main__':
-    ec2ssh.ec2ssh.main()
+    sshec2.sshec2.main()

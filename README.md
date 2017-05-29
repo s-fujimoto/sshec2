@@ -1,17 +1,17 @@
-# ec2ssh
-[![Build Status](https://travis-ci.org/s-fujimoto/ec2ssh.svg?branch=master)](https://travis-ci.org/s-fujimoto/ec2ssh)
-[![codecov](https://codecov.io/gh/s-fujimoto/ec2ssh/branch/master/graph/badge.svg)](https://codecov.io/gh/s-fujimoto/ec2ssh)
-[![Documentation Status](https://readthedocs.org/projects/ec2ssh/badge/?version=latest)](http://ec2ssh.readthedocs.io/en/latest/?badge=latest)
+# sshec2
+[![Build Status](https://travis-ci.org/s-fujimoto/sshec2.svg?branch=master)](https://travis-ci.org/s-fujimoto/sshec2)
+[![codecov](https://codecov.io/gh/s-fujimoto/sshec2/branch/master/graph/badge.svg)](https://codecov.io/gh/s-fujimoto/sshec2)
+[![Documentation Status](https://readthedocs.org/projects/sshec2/badge/?version=latest)](http://sshec2.readthedocs.io/en/latest/?badge=latest)
 
 SSH login utility for Amazon EC2 instance. Test only OSX.
 
-![](https://raw.githubusercontent.com/s-fujimoto/ec2ssh/master/ec2ssh.gif)
+![](https://raw.githubusercontent.com/s-fujimoto/sshec2/master/docs/sshec2.gif)
 
 # Documentation
 
 Japanese document page.
 
-##### [http://ec2ssh.readthedocs.io/ja/latest/](http://ec2ssh.readthedocs.io/ja/latest/)
+##### [http://sshec2.readthedocs.io/ja/latest/](http://sshec2.readthedocs.io/ja/latest/)
 
 ### Support python version
 - 2.7
@@ -37,8 +37,8 @@ Japanese document page.
 Command option. Option setting is available for Environment.
 
 ```
-$ ec2ssh --help
-usage: ec2ssh [-h] [-k KEY_PATH] [-u USERNAME] [--bastion] [-b BASTION_NAME]
+$ sshec2 --help
+usage: sshec2 [-h] [-k KEY_PATH] [-u USERNAME] [--bastion] [-b BASTION_NAME]
               [-e BASTION_KEY_PATH] [-s BASTION_USERNAME] [-p PROFILE]
               [-v VIF] [-r REGION] [--scp-to-ec2] [--scp-from-ec2]
               [--source-path SOURCE_PATH] [--target-path TARGET_PATH]
@@ -131,17 +131,17 @@ SCP from EC2 to local mode
 logging debug mode
 
 ### Usage
-Only exec command ```ec2ssh```
+Only exec command ```sshec2```
 
 #### Use not default profile (AWS credential)
-ec2ssh using default profile is ```default```.  
-ec2ssh is able to not default profile. ec2ssh searches profile name in ```~/.aws/credentials```.   
+sshec2 using default profile is ```default```.  
+sshec2 is able to not default profile. sshec2 searches profile name in ```~/.aws/credentials```.   
 
 For example...  
 - profile name : profile1
 
 ```
-$ ec2ssh -p profile1
+$ sshec2 -p profile1
 ```
 
 #### via bastion
@@ -154,7 +154,7 @@ For example...
 - Bastion instance user name : root
 
 ```
-$ ec2ssh -b bastion -e ~/.ssh/bastion.pem -s root 
+$ sshec2 -b bastion -e ~/.ssh/bastion.pem -s root 
 ```
 
 #### via vpn connection
@@ -170,7 +170,7 @@ $ ifconfig
 utun2: flags=8051<UP,POINTOPOINT,RUNNING,MULTICAST> mtu 1500
 	inet 192.168.0.100 --> 192.168.0.100 netmask 0xffffffff
 
-$ ec2ssh -v utun2
+$ sshec2 -v utun2
 <select target instance number>
 Input sudo password if required sudo password.
 Password: <input sudo password>
@@ -187,14 +187,14 @@ For example transfer to EC2 from local.
 - Destination Directory : /tmp/
 
 ```
-$ ec2ssh --scp-to --src README.md --dst /tmp/
+$ sshec2 --scp-to --src README.md --dst /tmp/
 ```
 
 ### Installation
 Install from github repository.
 
 ```
-$ pip install git+https://github.com/s-fujimoto/ec2ssh
+$ pip install git+https://github.com/s-fujimoto/sshec2
 ```
 
 ```
@@ -202,7 +202,7 @@ $ pip list
 boto3 (1.4.4)
 botocore (1.5.40)
 docutils (0.13.1)
-ec2ssh (0.0.1)
+sshec2 (0.0.1)
 jmespath (0.9.2)
 pip (9.0.1)
 python-dateutil (2.6.0)
@@ -215,5 +215,5 @@ six (1.10.0)
 Uninstall from pip packages
 
 ```
-$ pip uninstall ec2ssh
+$ pip uninstall sshec2
 ```

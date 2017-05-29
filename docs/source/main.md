@@ -1,10 +1,11 @@
-# ec2ssh
+# sshec2
 
-ec2ssh は Amazon EC2 for Linux へ SSH ログインを簡単にするためのツールです。
+sshec2 は Amazon EC2 for Linux へ SSH ログインを簡単にするためのツールです。  
+表示された EC2 インスタンスの一覧から番号を選択するだけで EC2 インスタンスへ SSH ログインすることができます。
 
 ## 機能
 
-ec2ssh は下記機能を提供します。
+sshec2 は下記機能を提供します。
 
 - EC2 インスタンス一覧の表示
     - 起動中の EC2 インスタンスでフィルタします

@@ -1,9 +1,9 @@
-.. ec2ssh documentation master file, created by
-   sphinx-quickstart on Sun May 28 17:22:02 2017.
+.. sshec2 documentation master file, created by
+   sphinx-quickstart on Mon May 29 11:44:00 2017.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to ec2ssh's documentation!
+Welcome to sshec2's documentation!
 ==================================
 
 .. toctree::

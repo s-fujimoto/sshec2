@@ -19,22 +19,22 @@ DEFAULT_USERNAME = 'ec2-user'
 DEFAULT_KEY_PATH = '~/.ssh/{}.pem'
 INPUT_MESSAGE = 'input number ( if filter, input name part. if abort, input \'q\' ) : '
 
-logger = logging.getLogger('ec2ssh')
+logger = logging.getLogger('sshec2')
 logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler(sys.stdout))
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Simple argparse CLI')
-    parser.add_argument('-k', '--key-path', dest='key_path', help='Specify private key path', default=os.environ.get('EC2SSH_KEY_PATH'), required=False)
-    parser.add_argument('-u', '--username', dest='username', help='Specify login user name', default=os.environ.get('EC2SSH_USERNAME'), required=False)
+    parser.add_argument('-k', '--key-path', dest='key_path', help='Specify private key path', default=os.environ.get('SSHEC2_KEY_PATH'), required=False)
+    parser.add_argument('-u', '--username', dest='username', help='Specify login user name', default=os.environ.get('SSHEC2_USERNAME'), required=False)
     parser.add_argument('--bastion', dest='bastion', help='Enabled selecting bastion mode', action="store_true", required=False)
-    parser.add_argument('-b', '--bastion-name', dest='bastion_name', help='Specify bastion instance name', default=os.environ.get('EC2SSH_BASTION_NAME'), required=False)
-    parser.add_argument('-e', '--bastion-key-path', dest='bastion_key_path', help='Specify bastion private key path', default=os.environ.get('EC2SSH_BASTION_KEY_PATH'), required=False)
-    parser.add_argument('-s', '--bastion-username', dest='bastion_username', help='Specify bastion user name', default=os.environ.get('EC2SSH_BASTION_USERNAME'), required=False)
-    parser.add_argument('-p', '--profile', dest='profile', help='Specify profile name for AWS credentials', default=os.environ.get('EC2SSH_AWS_PROFILE'), required=False)
-    parser.add_argument('-v', '--vpn-interface', dest='vif', help='Specify interface name for vpn', default=os.environ.get('EC2SSH_VPN_INTERFACE'), required=False)
-    parser.add_argument('-r', '--region', dest='region', help='Specify region name', default=os.environ.get('EC2SSH_AWS_REGION'), required=False)
+    parser.add_argument('-b', '--bastion-name', dest='bastion_name', help='Specify bastion instance name', default=os.environ.get('SSHEC2_BASTION_NAME'), required=False)
+    parser.add_argument('-e', '--bastion-key-path', dest='bastion_key_path', help='Specify bastion private key path', default=os.environ.get('SSHEC2_BASTION_KEY_PATH'), required=False)
+    parser.add_argument('-s', '--bastion-username', dest='bastion_username', help='Specify bastion user name', default=os.environ.get('SSHEC2_BASTION_USERNAME'), required=False)
+    parser.add_argument('-p', '--profile', dest='profile', help='Specify profile name for AWS credentials', default=os.environ.get('SSHEC2_AWS_PROFILE'), required=False)
+    parser.add_argument('-v', '--vpn-interface', dest='vif', help='Specify interface name for vpn', default=os.environ.get('SSHEC2_VPN_INTERFACE'), required=False)
+    parser.add_argument('-r', '--region', dest='region', help='Specify region name', default=os.environ.get('SSHEC2_AWS_REGION'), required=False)
     parser.add_argument('--scp-to-ec2', dest='scp_to', help='SCP from local to EC2 mode', action="store_true", required=False)
     parser.add_argument('--scp-from-ec2', dest='scp_from', help='SCP from EC2 to local mode', action="store_true", required=False)
     parser.add_argument('--src', dest='src_path', help='Specify source path', required=False)
@@ -76,7 +76,7 @@ def display_instances(instances, target, keyword=''):
 
     for num, instance in enumerate(instances):
         if keyword in get_instance_name(instance) and (target == 'TARGET' or (target == 'BASTION' and instance.get('PublicIpAddress'))):
-            print('\033[30;43m{0:3}\033[0m: {1} ({2}) {3}'.format(num, get_instance_name(instance), instance['InstanceId'], instance['Placement']['AvailabilityZone'][:-1]))
+            print('\033[30;43m{0:3}\033[0m: {1} ({2}) {3}'.format(num, get_instance_name(instance), instance['InstanceId'], instance['Placement']['AvailabilityZone']))
 
 
 def validate_input(instances, number):
