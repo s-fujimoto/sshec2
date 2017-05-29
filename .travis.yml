@@ -22,7 +22,6 @@ deploy:
   password:
     secure: uzzRlbSxHSIz1TwCAcRsmNq9wYhAY7wwfcCzlDydbFG9AaF3c845p42BPCRKxbzNIZDvzj3EwLh/rV2mbeO40oF9UoZaZOte6Ew7ruW5EjbWBNTcuLWBXPeBJLpuUmbX6ywXUVvxzhbxXoob+OdSrITvqjNb2r5QTphKjIifrs1QcLI05qsaqgTGgCyHAlrXYH3NCdbRCvp3985wxOFC0RXP69fuvw3pVqMDV/Uokdb3w9NI0WgieBRlJU21FT3Y07Fa7ieqOylkxQx14YzncharLprUHGzOOU8ZbJfQKcxrs7ugxlgHwc3XbnPa469XIx2g0AbaIyrAhPYjvoEHBxcgnPFUfTU+oSVoe23OLwVCyfYd6g6/1GkPQdBQuOUKKZIRR0y+0c9PKuO9YoX3KFNUsmttWBRiStXek29m0vVM+00GAXFAAl3w+kw62U0GvumEMPUx3ivRx167QrH0Z/67x/PHFM7fGLFbtA3sWkf8qLyb15uWp520OKCIFfjO9yfrN7WQRoJMMklyDtm5dl5+chDeSbE1g1ZxWNVvIfzpBYYcgi0/FnjHvpUm3nSIkSa+HIedyD034HY/L25JwUaslOGhmRZpVCpoTCbJpMb4ueyxGESrZo9kg6xIPzFBtxdCtAZFdOvV4YgyTnqxY7IpmZD0tRUQB/E0RKyqZMo=
   on:
-    # tags: true
+    tags: true
     distributions: sdist bdist_wheel
     repo: s-fujimoto/sshec2
-    branch: master
