@@ -2,18 +2,24 @@ language: python
 sudo: required
 branches:
   only:
-    - master
-python: 
-  - 2.7
-  - 3.3
-  - 3.4
-  - 3.5
-  - 3.6
-
+  - master
+python:
+- 2.7
+- 3.3
+- 3.4
+- 3.5
+- 3.6
 install:
-  - pip install -r test-requirements.txt
-  - python setup.py install
-script: 
-  - pytest -v --cov=sshec2
+- pip install -r requirements-test.txt
+- python setup.py install
+script:
+- python -m pytest tests --cov=sshec2 --cov-report=term-missing
 after_success:
-  - codecov
+- codecov
+deploy:
+  provider: pypi
+  user: a04316
+  password:
+    secure: JIdMifbVw6nCk5mrGoem2zgDgQVB3PCFnt4FfK6JrDHGWgOCATqlljmhcv202N21fFcIDZgRkufkmLAdXo0pAADj8fJydH1KJhIciTctf74FLR1KUo+lzlvWjQbfNpjcwbuvH92k63fvRoIzmv1KDiBPbtUg56W1WxmQRZqQwHjGwQCc60D+09hdb4BFSGufS1WC0lLt4Lk8ZJnAtMUtt6CGcRfwKJVN8ykgIrPrJuRIDlNMRt2LMFvw/9MnrGYVRLzPNziReyE97PncaKAuVmKQopycUVdRKhfIP/1CF3cQAh7GI5Q5foelhM26zw+SG4TvjXoyoiQQHfSZkAhYEtD9O8JXOdYxKjtoIn7PQctS8mmHdna4VIk4XX6LwS3xYG4i5NZeDUDmJHM6uuHQLRyF8zwGHUxh11lN7tPFi+9+qAZc5bhHuWzHgnZwm70RukT8Nt30H4tyDANu+qd6mUuSiyqohmVw5XCiS0M/vtmO40Ij/6+qgELdCS8SPFJTOslLgTBDHDOP4GXa8DO5Ep8xefMnquDDwkBXvQUiOIdI47TE2uWzaNLk2oVimsfMV/JbwRlvCzdiOxXpgjSFn0kuODELquPJJZPKBCaNJ+SesuiQLTbHu/AUX2ixWOX6T6rlWknNb87qj/PaT0LYaxwd7mN2dLwtEJ/H0hRbJfo=
+  on:
+    branch: master
