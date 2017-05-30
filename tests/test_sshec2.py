@@ -1,10 +1,10 @@
 import datetime
 from argparse import Namespace
 
-import mock
 import pytest
 from dateutil.tz import tzutc
 
+import mock
 from sshec2 import sshec2
 
 try:
