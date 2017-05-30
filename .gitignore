@@ -12,6 +12,7 @@ __pycache__
 coverage.xml
 .tox
 docs/build
+.eggs
 
 # IntelliJ / PyCharm IDE
 .idea/
