@@ -1,27 +1,21 @@
 from __future__ import print_function
-from builtins import input
-import logging
 
+import argparse
+import logging
+import os
 import subprocess
 import sys
-import os
-import argparse
-try:
-    import boto3
-except ImportError:
-    print('*******************************')
-    print('ERROR : Please install boto3. Please exec following commad.')
-    print('pip install boto3')
-    print('*******************************')
-    sys.exit(1)
+from builtins import input
+
+import boto3
 
 DEFAULT_USERNAME = 'ec2-user'
 DEFAULT_KEY_PATH = '~/.ssh/{}.pem'
 INPUT_MESSAGE = 'input number ( if filter, input name part. if abort, input \'q\' ) : '
 
-logger = logging.getLogger('sshec2')
-logger.setLevel(logging.INFO)
-logger.addHandler(logging.StreamHandler(sys.stdout))
+LOGGER = logging.getLogger('sshec2')
+LOGGER.setLevel(logging.INFO)
+LOGGER.addHandler(logging.StreamHandler(sys.stdout))
 
 
 def parse_args():
@@ -47,8 +41,8 @@ def get_instance_name(instance):
     tags = instance.get('Tags')
     if not tags:
         return ''
-    
-    name_tags = [ tag for tag in tags if tag['Key'] == 'Name' ]
+
+    name_tags = [tag for tag in tags if tag['Key'] == 'Name']
 
     if not name_tags:
         return ''
@@ -56,16 +50,16 @@ def get_instance_name(instance):
     return name_tags[0]['Value']
 
 
-def describe_instances(profile, bastion_name):
+def describe_instances(profile):
     session = boto3.Session(profile_name=profile)
     ec2 = session.client('ec2')
-    result = ec2.describe_instances(Filters=[{'Name':'instance-state-code', 'Values':['16']}])
+    result = ec2.describe_instances(Filters=[{'Name': 'instance-state-code', 'Values': ['16']}])
     desc_instances = [
         instance
         for reservation in result['Reservations']
         for instance in reservation['Instances']
     ]
-    instances = sorted(desc_instances, key=lambda i:get_instance_name(i))
+    instances = sorted(desc_instances, key=get_instance_name)
 
     return instances
 
@@ -89,11 +83,12 @@ def validate_input(instances, number):
     return 0 <= number < len(instances)
 
 
-def setting_bastion(instances, bastion_name, bastion):
+def setting_bastion(instances, bastion_name):
     if bastion_name:
-        bastion_instances = [ instance
+        bastion_instances = [
+            instance
             for instance in instances
-            if get_instance_name(instance) == bastion_name ]
+            if get_instance_name(instance) == bastion_name]
         if not bastion_instances:
             print("[WARN] Don't exist specified name instance.")
             sys.exit(1)
@@ -115,12 +110,12 @@ def select_instance(instances, target):
 
 
 def add_vpn_route(vif, instance):
-    ip = instance['PublicIpAddress']
-    p = subprocess.Popen('netstat -rn', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    out, err = p.communicate()
-    if not ip in out.decode('utf-8'):
+    ip_address = instance['PublicIpAddress']
+    proc = subprocess.Popen('netstat -rn', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, _ = proc.communicate()
+    if ip_address not in out.decode('utf-8'):
         print('Input sudo password if required sudo password.')
-        subprocess.call('sudo route add {}/32 -interface {}'.format(ip, vif), shell=True)
+        subprocess.call('sudo route add {}/32 -interface {}'.format(ip_address, vif), shell=True)
 
 
 def get_key_path(instance, key_path):
@@ -130,7 +125,7 @@ def get_key_path(instance, key_path):
     return key_path
 
 
-def get_username(instance, username):
+def get_username(username):
     if not username:
         username = DEFAULT_USERNAME
     return username
@@ -139,13 +134,13 @@ def get_username(instance, username):
 def get_host(instance, public=True):
     if public:
         return instance['PublicIpAddress']
-    else:
-        return instance['PrivateIpAddress']
+    return instance['PrivateIpAddress']
+
 
 def target_command(instance, key_path, username, public=True):
     return '-i {} {}@{}'.format(
         get_key_path(instance, key_path),
-        get_username(instance, username),
+        get_username(username),
         get_host(instance, public)
     )
 
@@ -157,25 +152,25 @@ def bastion_commands(instance, key_path, username):
 def generate_scp_command(instance, key_path, username, bastion_instance, bastion_key_path, bastion_username, src_path, dst_path, scp_from, scp_to):
     commands = ['scp', '-r']
 
-    ### bastion
+    # bastion
     if bastion_instance:
         commands.extend(bastion_commands(bastion_instance, bastion_key_path, bastion_username))
-    
-    ### target
+
+    # target
     commands.extend(['-i', get_key_path(instance, key_path)])
     if scp_from:
-        commands.extend(
-            ['{}@{}:{}'.format(
-                get_username(instance, username), 
-                get_host(instance, bastion_instance == None), 
-                src_path), 
+        commands.extend([
+            '{}@{}:{}'.format(
+                get_username(username),
+                get_host(instance, bastion_instance is None),
+                src_path),
             dst_path])
     elif scp_to:
-        commands.extend(
-            [src_path, 
+        commands.extend([
+            src_path,
             '{}@{}:{}'.format(
-                get_username(instance, username), 
-                get_host(instance, bastion_instance == None), 
+                get_username(username),
+                get_host(instance, bastion_instance is None),
                 dst_path)])
     return " ".join(commands)
 
@@ -183,12 +178,12 @@ def generate_scp_command(instance, key_path, username, bastion_instance, bastion
 def generate_ssh_command(instance, key_path, username, bastion_instance, bastion_key_path, bastion_username):
     commands = ['ssh']
 
-    ### bastion
+    # bastion
     if bastion_instance:
         commands.extend(bastion_commands(bastion_instance, bastion_key_path, bastion_username))
-    
-    ### target
-    commands.append(target_command(instance, key_path, username, bastion_instance == None))
+
+    # target
+    commands.append(target_command(instance, key_path, username, bastion_instance is None))
 
     return " ".join(commands)
 
@@ -197,31 +192,31 @@ def main():
     args = parse_args()
 
     if args.debug:
-        logger.setLevel(logging.DEBUG)
-    
-    instances = describe_instances(args.profile, args.bastion_name)
+        LOGGER.setLevel(logging.DEBUG)
 
-    ### bastion setting
+    instances = describe_instances(args.profile)
+
+    # bastion setting
     bastion_instance = None
     if args.bastion_name or args.bastion:
-        bastion_instance = setting_bastion(instances, args.bastion_name, args.bastion)
+        bastion_instance = setting_bastion(instances, args.bastion_name)
 
-    ### target
+    # target
     instance = select_instance(instances, 'TARGET')
 
-    ### add vpn route
+    # add vpn route
     if args.vif:
         add_vpn_route(args.vif, bastion_instance if bastion_instance else instance)
 
-    ### connect
+    # connect
     if args.scp_from or args.scp_to:
         command = generate_scp_command(
-            instance, args.key_path, args.username, bastion_instance, args.bastion_key_path, 
+            instance, args.key_path, args.username, bastion_instance, args.bastion_key_path,
             args.bastion_username, args.src_path, args.dst_path, args.scp_from, args.scp_to)
     else:
         command = generate_ssh_command(
-            instance, args.key_path, args.username, bastion_instance, args.bastion_key_path, 
+            instance, args.key_path, args.username, bastion_instance, args.bastion_key_path,
             args.bastion_username)
-    
-    logger.debug(command)
+
+    LOGGER.debug(command)
     subprocess.call(command, shell=True)

@@ -3,18 +3,20 @@ sudo: required
 branches:
   only:
   - master
-  - "/^v?[0-9\\.]+/"
-python:
-- 2.7
-- 3.3
-- 3.4
-- 3.5
-- 3.6
+  - "/^[0-9]+\\.[0-9]+\\.[0-9]+/"
+python: 3.6
+env:
+- TOXENV=py27
+- TOXENV=py33
+- TOXENV=py34
+- TOXENV=py35
+- TOXENV=py36
+- TOXENV=flake8
+- TOXENV=isort
 install:
-- pip install -r requirements-test.txt
-- python setup.py install
+- pip install tox codecov
 script:
-- python -m pytest tests --cov=sshec2 --cov-report=term-missing
+- tox
 after_success:
 - codecov
 deploy:
@@ -26,4 +28,4 @@ deploy:
     tags: true
     distributions: sdist bdist_wheel
     repo: s-fujimoto/sshec2
-    condition: $TRAVIS_PYTHON_VERSION = "3.6"
+    condition: $TOXENV = py36
