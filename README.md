@@ -11,7 +11,7 @@ SSH login utility for Amazon EC2 instance. Test only OSX.
 
 Japanese document page.
 
-##### [http://sshec2.readthedocs.io/ja/latest/](http://sshec2.readthedocs.io/ja/latest/)
+##### [http://sshec2.readthedocs.io/en/latest/](http://sshec2.readthedocs.io/en/latest/)
 
 ### Support python version
 - 2.7
