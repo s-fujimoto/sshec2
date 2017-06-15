@@ -1,16 +1,16 @@
 import datetime
 from argparse import Namespace
+import subprocess
 
 import pytest
 from dateutil.tz import tzutc
 
-import mock
 from sshec2 import sshec2
 
 try:
-    from unittest.mock import MagicMock
+    from unittest.mock import patch, MagicMock
 except ImportError:
-    from mock import MagicMock
+    from mock import patch, MagicMock
 
 
 instances_data = [
@@ -169,7 +169,6 @@ instances_data = [
         'StateTransitionReason': '',
         'SubnetId': 'subnet-xxxxxxxxx',
         'Tags': [
-            {'Key': 'KEY1', 'Value': 'VALUE1'},
             {'Key': 'Name', 'Value': 'INSTANCE001'}],
         'VirtualizationType': 'hvm',
         'VpcId': 'vpc-xxxxxxxxx'
@@ -249,15 +248,182 @@ instances_data = [
         'StateTransitionReason': '',
         'SubnetId': 'subnet-xxxxxxxxx',
         'Tags': [
-            {'Key': 'KEY1', 'Value': 'VALUE1'},
-            {'Key': 'Name', 'Value': 'INSTANCE002'}],
+            {'Key': 'KEY2', 'Value': 'VALUE2'},
+            {'Key': 'Name', 'Value': 'INSTANCE002'},
+            {'Key': 'KEY3', 'Value': 'VALUE3'}],
+        'VirtualizationType': 'hvm',
+        'VpcId': 'vpc-xxxxxxxxx'
+    },
+    {
+        'AmiLaunchIndex': 0,
+        'Architecture': 'x86_64',
+        'BlockDeviceMappings': [{
+            'DeviceName': '/dev/xvda',
+            'Ebs': {
+                'AttachTime': datetime.datetime(2016, 8, 29, 13, 39, 22, tzinfo=tzutc()),
+                'DeleteOnTermination': True,
+                'Status': 'attached',
+                'VolumeId': 'vol-000000000000'}}],
+        'ClientToken': 'xxxxxxxxxxxxx',
+        'EbsOptimized': False,
+        'EnaSupport': True,
+        'Hypervisor': 'xen',
+        'IamInstanceProfile': {
+            'Arn': 'arn:aws:iam::xxxxxxxxxx:instance-profile/xxxxxxxxxxxx',
+            'Id': 'xxxxxxxxxxxxxx'},
+        'ImageId': 'ami-2443b745',
+        'InstanceId': 'i-000000000000',
+        'InstanceType': 't2.nano',
+        'KeyName': 'keypair2',
+        'LaunchTime': datetime.datetime(2017, 3, 16, 3, 37, 33, tzinfo=tzutc()),
+        'Monitoring': {'State': 'disabled'},
+        'NetworkInterfaces': [{
+            'Association': {
+                'IpOwnerId': 'xxxxxxxxx',
+                'PublicDnsName': 'ec2-2-2-2-2.ap-northeast-1.compute.amazonaws.com',
+                'PublicIp': '2.2.2.2'},
+            'Attachment': {
+                'AttachTime': datetime.datetime(2016, 8, 29, 13, 39, 21, tzinfo=tzutc()),
+                'AttachmentId': 'eni-attach-00000000',
+                'DeleteOnTermination': True,
+                'DeviceIndex': 0,
+                'Status': 'attached'},
+            'Description': 'Primary network interface',
+            'Groups': [
+                {'GroupId': 'sg-xxxxxxx', 'GroupName': 'default'},
+                {'GroupId': 'sg-xxxxxxxxx', 'GroupName': 'ssh'}],
+            'Ipv6Addresses': [],
+            'MacAddress': 'xx:xx:xx:xx:xx:xx',
+            'NetworkInterfaceId': 'eni-xxxxxxxxx',
+            'OwnerId': 'xxxxxxxxxx',
+            'PrivateDnsName': 'ip-192-168-2-2.ap-northeast-1.compute.internal',
+            'PrivateIpAddress': '192.168.2.2',
+            'PrivateIpAddresses': [{
+                'Association': {
+                    'IpOwnerId': 'xxxxxxxxx',
+                    'PublicDnsName': 'ec2-2-2-2-2.ap-northeast-1.compute.amazonaws.com',
+                    'PublicIp': '2.2.2.2'},
+                'Primary': True,
+                'PrivateDnsName': 'ip-192-168-2-2.ap-northeast-1.compute.internal',
+                'PrivateIpAddress': '192.168.2.2'}],
+            'SourceDestCheck': False,
+            'Status': 'in-use',
+            'SubnetId': 'subnet-xxxxxxxx',
+            'VpcId': 'vpc-xxxxxxx'}],
+        'Placement': {
+            'AvailabilityZone': 'ap-northeast-1a',
+            'GroupName': '',
+            'Tenancy': 'default'},
+        'PrivateDnsName': 'ip-192-168-2-2.ap-northeast-1.compute.internal',
+        'PrivateIpAddress': '192.168.2.2',
+        'ProductCodes': [],
+        'PublicDnsName': 'ec2-2-2-2-2.ap-northeast-1.compute.amazonaws.com',
+        'PublicIpAddress': '2.2.2.2',
+        'RootDeviceName': '/dev/xvda',
+        'RootDeviceType': 'ebs',
+        'SecurityGroups': [
+            {'GroupId': 'sg-xxxxxxxx', 'GroupName': 'default'},
+            {'GroupId': 'sg-xxxxxxx', 'GroupName': 'ssh'}],
+        'SourceDestCheck': False,
+        'State': {'Code': 16, 'Name': 'running'},
+        'StateTransitionReason': '',
+        'SubnetId': 'subnet-xxxxxxxxx',
+        'Tags': [
+            {'Key': 'KEY1', 'Value': 'VALUE1'}
+        ],
+        'VirtualizationType': 'hvm',
+        'VpcId': 'vpc-xxxxxxxxx'
+    },
+    {
+        'AmiLaunchIndex': 0,
+        'Architecture': 'x86_64',
+        'BlockDeviceMappings': [{
+            'DeviceName': '/dev/xvda',
+            'Ebs': {
+                'AttachTime': datetime.datetime(2016, 8, 29, 13, 39, 22, tzinfo=tzutc()),
+                'DeleteOnTermination': True,
+                'Status': 'attached',
+                'VolumeId': 'vol-000000000000'}}],
+        'ClientToken': 'xxxxxxxxxxxxx',
+        'EbsOptimized': False,
+        'EnaSupport': True,
+        'Hypervisor': 'xen',
+        'IamInstanceProfile': {
+            'Arn': 'arn:aws:iam::xxxxxxxxxx:instance-profile/xxxxxxxxxxxx',
+            'Id': 'xxxxxxxxxxxxxx'},
+        'ImageId': 'ami-2443b745',
+        'InstanceId': 'i-000000000000',
+        'InstanceType': 't2.nano',
+        'KeyName': 'keypair2',
+        'LaunchTime': datetime.datetime(2017, 3, 16, 3, 37, 33, tzinfo=tzutc()),
+        'Monitoring': {'State': 'disabled'},
+        'NetworkInterfaces': [{
+            'Association': {
+                'IpOwnerId': 'xxxxxxxxx',
+                'PublicDnsName': 'ec2-2-2-2-2.ap-northeast-1.compute.amazonaws.com',
+                'PublicIp': '2.2.2.2'},
+            'Attachment': {
+                'AttachTime': datetime.datetime(2016, 8, 29, 13, 39, 21, tzinfo=tzutc()),
+                'AttachmentId': 'eni-attach-00000000',
+                'DeleteOnTermination': True,
+                'DeviceIndex': 0,
+                'Status': 'attached'},
+            'Description': 'Primary network interface',
+            'Groups': [
+                {'GroupId': 'sg-xxxxxxx', 'GroupName': 'default'},
+                {'GroupId': 'sg-xxxxxxxxx', 'GroupName': 'ssh'}],
+            'Ipv6Addresses': [],
+            'MacAddress': 'xx:xx:xx:xx:xx:xx',
+            'NetworkInterfaceId': 'eni-xxxxxxxxx',
+            'OwnerId': 'xxxxxxxxxx',
+            'PrivateDnsName': 'ip-192-168-2-2.ap-northeast-1.compute.internal',
+            'PrivateIpAddress': '192.168.2.2',
+            'PrivateIpAddresses': [{
+                'Association': {
+                    'IpOwnerId': 'xxxxxxxxx',
+                    'PublicDnsName': 'ec2-2-2-2-2.ap-northeast-1.compute.amazonaws.com',
+                    'PublicIp': '2.2.2.2'},
+                'Primary': True,
+                'PrivateDnsName': 'ip-192-168-2-2.ap-northeast-1.compute.internal',
+                'PrivateIpAddress': '192.168.2.2'}],
+            'SourceDestCheck': False,
+            'Status': 'in-use',
+            'SubnetId': 'subnet-xxxxxxxx',
+            'VpcId': 'vpc-xxxxxxx'}],
+        'Placement': {
+            'AvailabilityZone': 'ap-northeast-1a',
+            'GroupName': '',
+            'Tenancy': 'default'},
+        'PrivateDnsName': 'ip-192-168-2-2.ap-northeast-1.compute.internal',
+        'PrivateIpAddress': '192.168.2.2',
+        'ProductCodes': [],
+        'PublicDnsName': 'ec2-2-2-2-2.ap-northeast-1.compute.amazonaws.com',
+        'PublicIpAddress': '2.2.2.2',
+        'RootDeviceName': '/dev/xvda',
+        'RootDeviceType': 'ebs',
+        'SecurityGroups': [
+            {'GroupId': 'sg-xxxxxxxx', 'GroupName': 'default'},
+            {'GroupId': 'sg-xxxxxxx', 'GroupName': 'ssh'}],
+        'SourceDestCheck': False,
+        'State': {'Code': 16, 'Name': 'running'},
+        'StateTransitionReason': '',
+        'SubnetId': 'subnet-xxxxxxxxx',
         'VirtualizationType': 'hvm',
         'VpcId': 'vpc-xxxxxxxxx'
     }
 ]
 
 
-@pytest.mark.parametrize("instance,expected", [(i, 'INSTANCE00' + str(num)) for num, i in enumerate(instances_data)])
+get_instance_name_data = [
+    (instances_data[0], 'INSTANCE000'),
+    (instances_data[1], 'INSTANCE001'),
+    (instances_data[2], 'INSTANCE002'),
+    (instances_data[3], ''),
+    (instances_data[4], ''),
+]
+
+
+@pytest.mark.parametrize("instance,expected", get_instance_name_data)
 def test_get_instance_name(instance, expected):
     assert sshec2.get_instance_name(instance) == expected
 
@@ -267,8 +433,11 @@ validate_data = [
     (instances_data, 1, True),
     (instances_data, 2, True),
     (instances_data, -1, False),
-    (instances_data, 3, False),
-    (instances_data, 4, False),
+    (instances_data, 3, True),
+    (instances_data, 4, True),
+    (instances_data, 5, False),
+    (instances_data, 6, False),
+    (instances_data, 'a', False),
 ]
 
 
@@ -277,16 +446,38 @@ def test_validate_input(instances, number, expected):
     assert sshec2.validate_input(instances, number) == expected
 
 
+def test_system_exit_validate_input():
+    with pytest.raises(SystemExit):
+        sshec2.validate_input(instances_data, 'q')
+
+
 setting_bastion_data = [
     (instances_data, 'INSTANCE000', '0.0.0.0'),
     (instances_data, 'INSTANCE001', '1.1.1.1'),
+    (instances_data, '', 'test'),
 ]
 
 
 @pytest.mark.parametrize("instances,bastion_name,expected", setting_bastion_data)
 def test_setting_bastion(instances, bastion_name, expected):
-    bastion = sshec2.setting_bastion(instances, bastion_name)
-    assert bastion['PublicIpAddress'] == expected
+    with patch('sshec2.sshec2.select_instance', lambda instances, target: {'PublicIpAddress': 'test'}):
+        bastion = sshec2.setting_bastion(instances, bastion_name)
+        assert bastion['PublicIpAddress'] == expected
+
+
+system_exit_setting_bastion_data = [
+    (instances_data, 'abc'),
+    ([
+        {'Tags': [{'Key': 'Name', 'Value': 'instance1'}]},
+        {'Tags': [{'Key': 'Name', 'Value': 'instance1'}]}
+    ], 'instance1'),
+]
+
+
+@pytest.mark.parametrize("instances,bastion_name", system_exit_setting_bastion_data)
+def test_system_exit_setting_bastion(instances, bastion_name):
+    with pytest.raises(SystemExit):
+        sshec2.setting_bastion(instances, bastion_name)
 
 
 get_key_path_data = [
@@ -353,6 +544,7 @@ generate_scp_command_data = [
     (instances_data[1], '~/.ssh/test.pem', None, None, None, None, 'from.txt', '/to/', True, False, 'scp -r -i ~/.ssh/test.pem ec2-user@1.1.1.1:from.txt /to/'),
     (instances_data[2], None, 'test', None, None, None, 'from.txt', '/to/', True, False, 'scp -r -i ~/.ssh/keypair2.pem test@2.2.2.2:from.txt /to/'),
     (instances_data[0], None, None, instances_data[1], None, None, 'from.txt', '/to/', True, False, 'scp -r -o ProxyCommand="ssh -W %h:%p -i ~/.ssh/keypair1.pem ec2-user@1.1.1.1" -i ~/.ssh/keypair0.pem ec2-user@192.168.0.0:from.txt /to/'),
+    (instances_data[0], None, None, instances_data[1], None, None, 'from.txt', '/to/', False, True, 'scp -r -o ProxyCommand="ssh -W %h:%p -i ~/.ssh/keypair1.pem ec2-user@1.1.1.1" -i ~/.ssh/keypair0.pem from.txt ec2-user@192.168.0.0:/to/'),
 ]
 
 
@@ -378,7 +570,7 @@ def mock_parse_args(expected):
     return Namespace(bastion_name='bastion')
 
 
-@mock.patch('argparse.ArgumentParser.parse_args', mock_parse_args)
+@patch('argparse.ArgumentParser.parse_args', mock_parse_args)
 def test_parse_args():
     assert sshec2.parse_args().bastion_name == 'bastion'
 
@@ -460,3 +652,56 @@ def test_describe_instances(monkeypatch):
     ec2.describe_instances.return_value = response
     monkeypatch.setattr('boto3.Session', mock_session(ec2))
     assert len(sshec2.describe_instances('None')) == 3
+
+
+display_instances_data = [
+    (instances_data, 'TARGET', ''),
+    (instances_data, 'BASTION', ''),
+    (instances_data, 'TARGET', 'INSTANCE'),
+]
+
+
+@pytest.mark.parametrize("instances,target,keyword", display_instances_data)
+def test_display_instances(instances, target, keyword):
+    sshec2.display_instances(instances, target, keyword)
+
+
+select_instance_data = [
+    (1, instances_data[1]),
+    # ('a', instances_data[2])
+]
+
+@pytest.mark.parametrize("input_value,expected", select_instance_data)
+def test_select_instance(input_value, expected):
+    with patch('sshec2.sshec2.get_input', lambda : input_value):
+        assert sshec2.select_instance(instances_data, 'TARGET') == expected
+
+
+add_vpn_route_data = [
+    ('test', instances_data[0])
+]
+
+@pytest.mark.parametrize("vif,instance", add_vpn_route_data)
+def test_add_vpn_route(vif, instance):
+    with patch('subprocess.call', lambda a, shell: a):
+        sshec2.add_vpn_route(vif, instance)
+
+
+main_data = [
+    (True, 'INSTANCE000', True, True, False),
+    (False, 'INSTANCE000', False, False, False),
+]
+
+
+@pytest.mark.parametrize("debug,bastion_name,vif,scp_from,scp_to", main_data)
+def test_main(debug, bastion_name, vif, scp_from, scp_to):
+    sshec2.parse_args = MagicMock(debug=debug, bastion_name=bastion_name, vif=vif, scp_from=scp_from, scp_to=scp_to)
+    sshec2.describe_instances = MagicMock(return_value=instances_data)
+    sshec2.setting_bastion = MagicMock(return_value=instances_data[0])
+    sshec2.select_instance = MagicMock(return_value=instances_data[1])
+    sshec2.add_vpn_route = MagicMock()
+    sshec2.generate_scp_command = MagicMock(return_value='scp')
+    sshec2.generate_ssh_command = MagicMock(return_value='ssh')
+    subprocess.call = MagicMock()
+    sshec2.main()
+

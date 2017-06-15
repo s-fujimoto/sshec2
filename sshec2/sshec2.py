@@ -50,8 +50,8 @@ def get_instance_name(instance):
     return name_tags[0]['Value']
 
 
-def describe_instances(profile):
-    session = boto3.Session(profile_name=profile)
+def describe_instances(profile, region):
+    session = boto3.Session(profile_name=profile, region_name=region)
     ec2 = session.client('ec2')
     result = ec2.describe_instances(Filters=[{'Name': 'instance-state-code', 'Values': ['16']}])
     desc_instances = [
@@ -99,13 +99,17 @@ def setting_bastion(instances, bastion_name):
     return select_instance(instances, 'BASTION')
 
 
+def get_input():
+    return input(INPUT_MESSAGE)
+
+
 def select_instance(instances, target):
     display_instances(instances, target)
-    number = input(INPUT_MESSAGE)
+    number = get_input()
 
     while not validate_input(instances, number):
         display_instances(instances, target, number)
-        number = input(INPUT_MESSAGE)
+        number = get_input()
     return instances[int(number)]
 
 
@@ -194,7 +198,7 @@ def main():
     if args.debug:
         LOGGER.setLevel(logging.DEBUG)
 
-    instances = describe_instances(args.profile)
+    instances = describe_instances(args.profile, args.region)
 
     # bastion setting
     bastion_instance = None
