@@ -671,15 +671,17 @@ select_instance_data = [
     # ('a', instances_data[2])
 ]
 
+
 @pytest.mark.parametrize("input_value,expected", select_instance_data)
 def test_select_instance(input_value, expected):
-    with patch('sshec2.sshec2.get_input', lambda : input_value):
+    with patch('sshec2.sshec2.get_input', lambda: input_value):
         assert sshec2.select_instance(instances_data, 'TARGET') == expected
 
 
 add_vpn_route_data = [
     ('test', instances_data[0])
 ]
+
 
 @pytest.mark.parametrize("vif,instance", add_vpn_route_data)
 def test_add_vpn_route(vif, instance):
@@ -704,4 +706,3 @@ def test_main(debug, bastion_name, vif, scp_from, scp_to):
     sshec2.generate_ssh_command = MagicMock(return_value='ssh')
     subprocess.call = MagicMock()
     sshec2.main()
-
