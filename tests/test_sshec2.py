@@ -651,7 +651,7 @@ def test_describe_instances(monkeypatch):
     ec2 = MagicMock()
     ec2.describe_instances.return_value = response
     monkeypatch.setattr('boto3.Session', mock_session(ec2))
-    assert len(sshec2.describe_instances('None')) == 3
+    assert len(sshec2.describe_instances(None, None)) == 3
 
 
 display_instances_data = [
