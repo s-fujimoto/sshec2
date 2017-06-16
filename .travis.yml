@@ -27,4 +27,7 @@ deploy:
     tags: true
     distributions: sdist bdist_wheel
     repo: s-fujimoto/sshec2
-    condition: $TOXENV = py36
+    condition: "$TOXENV = py36"
+notifications:
+  slack:
+    secure: MulHsfP0ab6Oz4PaFx/6hVuoE/zpVDtFCZY7lpGITPkDu4+uP8R9Dhz/UwxpYA2JTIDuWeJ8kZkTQbEUxfEFAvPAKvMLL6YpnnOrXCummpeFQRXFxMCxP8ilaIeCgOYQSxVB9eQMoyoNdvQmxiN/+c8vi8QVrS/VIb4OGjRYy0P0dvwzEn2cwbEokCSF0GwIt26DuxdiO/vx389+YDCdTs0+ViE//sxtvSbhbyaFKHUYax/5Z//jFxxUcAdbSYqPrcHPeJCfkGedeyto42oAR0B3tgeq0FKYR9605LtPqWrJj8k03ZGy5Jl3Hrs/G9bZk+o1XzZtX+rlIQZKGJ2PMZtnblDuZFxet8om0i1U2tSUiRC/d2NWbJ9jbuWXlcrxkqmcygEuI/g/Pn2CBeW7XhnHXmwdqxmJyVddzTpVr9Tv04aQUsLGsYHkpbVBtuREDr09CBgIeQ7nxE758moxTt0StzARN8KvWlKLwF3Tnx8m7b8eTVNZdtDWjXQ9+mgIu4wKiSx5maQ8eyYoNrFXbH3TuV9iAX2ahnoOueqnyDufKtkVH/+KEQVj3JtsK0oC3jUKnIz9C8ZFnTiOmQ3AiTW6NEswPcJY+exrskWGr7OS/gQKHLrQTYfe2t2OE3376TCv5fTNNyNF1987nsWtG51KhTYcmZscuCFMbioMsFY=
