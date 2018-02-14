@@ -25,7 +25,7 @@ sshec2 は pip コマンドによりインストール、およびアンイン�
 
 ## インストール
 
-pip コマンドを利用して、Github リポジトリから直接インストールします。PyPI には登録していません。
+pip コマンドを利用してインストールできます。
 
 ### インストール前
 ```
@@ -41,8 +41,7 @@ wheel (0.24.0)
 
 ### インストール
 ```
-$ pip install
-pip install sshec2
+$ pip install sshec2
 Collecting sshec2
 Collecting botocore==1.5.40 (from sshec2)
   Using cached botocore-1.5.40-py2.py3-none-any.whl

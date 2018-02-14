@@ -13,6 +13,7 @@ coverage.xml
 .tox
 docs/build
 .eggs
+venv
 
 # IntelliJ / PyCharm IDE
 .idea/

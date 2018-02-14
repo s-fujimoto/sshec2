@@ -1,7 +1,7 @@
 # sshec2
 [![Build Status](https://travis-ci.org/s-fujimoto/sshec2.svg?branch=master)](https://travis-ci.org/s-fujimoto/sshec2)
 [![codecov](https://codecov.io/gh/s-fujimoto/sshec2/branch/master/graph/badge.svg)](https://codecov.io/gh/s-fujimoto/sshec2)
-[![Documentation Status](https://readthedocs.org/projects/sshec2/badge/?version=latest)](http://sshec2.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/sshec2/badge/?version=master)](http://sshec2.readthedocs.io/ja/master/)
 
 SSH login utility for Amazon EC2 instance. Test only OSX.
 
