@@ -553,8 +553,10 @@ generate_scp_command_data = [
     (instances_data[0], None, None, None, None, None, 'from.txt', '/to/', True, False, None, 'scp -r -i ~/.ssh/keypair0.pem ec2-user@0.0.0.0:from.txt /to/'),
     (instances_data[1], '~/.ssh/test.pem', None, None, None, None, 'from.txt', '/to/', True, False, None, 'scp -r -i ~/.ssh/test.pem ec2-user@1.1.1.1:from.txt /to/'),
     (instances_data[2], None, 'test', None, None, None, 'from.txt', '/to/', True, False, None, 'scp -r -i ~/.ssh/keypair2.pem test@2.2.2.2:from.txt /to/'),
-    (instances_data[0], None, None, instances_data[1], None, None, 'from.txt', '/to/', True, False, None, 'scp -r -o ProxyCommand="ssh  -W 192.168.0.0:%p -i ~/.ssh/keypair1.pem ec2-user@1.1.1.1" -i ~/.ssh/keypair0.pem ec2-user@192.168.0.0:from.txt /to/'),
-    (instances_data[0], None, None, instances_data[1], None, None, 'from.txt', '/to/', False, True, None, 'scp -r -o ProxyCommand="ssh  -W 192.168.0.0:%p -i ~/.ssh/keypair1.pem ec2-user@1.1.1.1" -i ~/.ssh/keypair0.pem from.txt ec2-user@192.168.0.0:/to/'),
+    (instances_data[0], None, None, instances_data[1], None, None, 'from.txt', '/to/', True, False, None,
+     'scp -r -o ProxyCommand="ssh  -W 192.168.0.0:%p -i ~/.ssh/keypair1.pem ec2-user@1.1.1.1" -i ~/.ssh/keypair0.pem ec2-user@192.168.0.0:from.txt /to/'),
+    (instances_data[0], None, None, instances_data[1], None, None, 'from.txt', '/to/', False, True, None,
+     'scp -r -o ProxyCommand="ssh  -W 192.168.0.0:%p -i ~/.ssh/keypair1.pem ec2-user@1.1.1.1" -i ~/.ssh/keypair0.pem from.txt ec2-user@192.168.0.0:/to/'),
 ]
 
 
