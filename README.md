@@ -7,11 +7,40 @@ SSH login utility for Amazon EC2 instance. Test only OSX.
 
 ![](https://raw.githubusercontent.com/s-fujimoto/sshec2/master/docs/sshec2.gif)
 
-# Documentation
+## Documentation
 
 Japanese document page.
 
 ##### [http://sshec2.readthedocs.io/](http://sshec2.readthedocs.io/)
+
+## Features
+- ssh login 
+- display instance list (only running status instances)
+    - Name tag and instance ID
+- search and filter instance by name
+- access via specify bastion
+- access via vpn connection
+- access via SOCKS proxy
+- specify key name
+- specify username
+- transfer file via scp
+    - from EC2 to local
+    - from local to EC2
+
+## Usage
+### Installation
+Install from PyPI repository.
+
+```
+$ pip install sshec2
+```
+
+### Uninstallation
+Uninstall from pip packages
+
+```
+$ pip uninstall sshec2
+```
 
 ### Support python version
 - 2.7
@@ -19,19 +48,6 @@ Japanese document page.
 - 3.4
 - 3.5
 - 3.6
-
-### Features
-- ssh login 
-- display instance list (only running status instances)
-    - Name tag and instance ID
-- search and filter instance by name
-- access via specify bastion
-- access via vpn connection
-- specify key name
-- specify username
-- transfer file via scp
-    - from EC2 to local
-    - from local to EC2
 
 ### Option
 Command option. Option setting is available for Environment.
@@ -188,32 +204,4 @@ For example transfer to EC2 from local.
 
 ```
 $ sshec2 --scp-to --src README.md --dst /tmp/
-```
-
-### Installation
-Install from github repository.
-
-```
-$ pip install git+https://github.com/s-fujimoto/sshec2
-```
-
-```
-$ pip list
-boto3 (1.4.4)
-botocore (1.5.40)
-docutils (0.13.1)
-sshec2 (0.0.1)
-jmespath (0.9.2)
-pip (9.0.1)
-python-dateutil (2.6.0)
-s3transfer (0.1.10)
-setuptools (28.8.0)
-six (1.10.0)
-```
-
-### Uninstallation
-Uninstall from pip packages
-
-```
-$ pip uninstall sshec2
 ```

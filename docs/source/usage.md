@@ -170,6 +170,37 @@ Amazon Linux version 2017.03 is available.
 [ec2-user@ip-172-31-0-101 ~]$
 ```
 
+" to apply all updates.
+Amazon Linux version 2017.03 is available.
+[ec2-user@ip-172-31-0-100 ~]$
+```
+
+## 多段 SSH 接続（SOCKS プロキシ経由）
+
+社内の環境からインターネットアクセスする時に SOCKS プロキシ経由でアクセスする環境では、オプションで SOCKS プロキシの URL を指定することで SOCKS プロキシ経由の SSH 接続を行うことができます。踏み台サーバ経由と併用することも可能です。
+
+```
+$ sshec2 -s 10.0.0.1
+[ SELECT TARGET INSTANCE LIST ]
+  0: instance000 (i-aaaaaaaaaaaaaaa) ap-northeast-1a
+  1: instance001 (i-bbbbbbbbbbbbbbb) ap-northeast-1c
+  2: instance002 (i-ccccccccccccccc) ap-northeast-1a
+  3: instance003 (i-ddddddddddddddd) ap-northeast-1c
+  4: instance004 (i-eeeeeeeeeeeeeee) ap-northeast-1a
+input number ( if filter, input name part. if abort, input 'q' ) : 0
+Last login: Fri May 26 10:48:08 2017 from xxxxxx.xx.xx.jp
+
+       __|  __|_  )
+       _|  (     /   Amazon Linux AMI
+      ___|\___|___|
+
+https://aws.amazon.com/amazon-linux-ami/2016.09-release-notes/
+21 package(s) needed for security, out of 55 available
+Run "sudo yum update" to apply all updates.
+Amazon Linux version 2017.03 is available.
+[ec2-user@ip-172-31-0-100 ~]$
+```
+
 ## VPN 接続
 
 社内などの固定された環境以外からもアクセスする場合もあるかと思います。例えば、自宅から社内の SSL-VPN を経由して、ログインするケース。この場合に SSL-VPN へのルーティング設定を自動で追加する機能があります。
@@ -220,11 +251,7 @@ Last login: Fri May 26 10:48:08 2017 from xxxxxx.xx.xx.jp
 
 https://aws.amazon.com/amazon-linux-ami/2016.09-release-notes/
 21 package(s) needed for security, out of 55 available
-Run "sudo yum update" to apply all updates.
-Amazon Linux version 2017.03 is available.
-[ec2-user@ip-172-31-0-100 ~]$
-```
-
+Run "sudo yum update
 
 ## SCP モード
 
