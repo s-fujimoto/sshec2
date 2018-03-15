@@ -22,12 +22,14 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Simple argparse CLI')
     parser.add_argument('-k', '--key-path', dest='key_path', help='Specify private key path', default=os.environ.get('SSHEC2_KEY_PATH'), required=False)
     parser.add_argument('-u', '--username', dest='username', help='Specify login user name', default=os.environ.get('SSHEC2_USERNAME'), required=False)
-    parser.add_argument('--bastion', dest='bastion', help='Enabled selecting bastion mode', action="store_true", required=False)
+    parser.add_argument('-B', '--bastion', dest='bastion', help='Enabled selecting bastion mode', action="store_true", required=False)
     parser.add_argument('-b', '--bastion-name', dest='bastion_name', help='Specify bastion instance name', default=os.environ.get('SSHEC2_BASTION_NAME'), required=False)
-    parser.add_argument('-e', '--bastion-key-path', dest='bastion_key_path', help='Specify bastion private key path', default=os.environ.get('SSHEC2_BASTION_KEY_PATH'), required=False)
-    parser.add_argument('-s', '--bastion-username', dest='bastion_username', help='Specify bastion user name', default=os.environ.get('SSHEC2_BASTION_USERNAME'), required=False)
+    parser.add_argument('-K', '--bastion-key-path', dest='bastion_key_path', help='Specify bastion private key path', default=os.environ.get('SSHEC2_BASTION_KEY_PATH'), required=False)
+    parser.add_argument('-U', '--bastion-username', dest='bastion_username', help='Specify bastion user name', default=os.environ.get('SSHEC2_BASTION_USERNAME'), required=False)
     parser.add_argument('-p', '--profile', dest='profile', help='Specify profile name for AWS credentials', default=os.environ.get('SSHEC2_AWS_PROFILE'), required=False)
     parser.add_argument('-v', '--vpn-interface', dest='vif', help='Specify interface name for vpn', default=os.environ.get('SSHEC2_VPN_INTERFACE'), required=False)
+    parser.add_argument('-s', '--socks-proxy-url', dest='socks_proxy_url', help='Specify socks proxy url', default=os.environ.get('SSHEC2_SOCKS_PROXY_URL'), required=False)
+    parser.add_argument('-S', '--socks-proxy', dest='socks_proxy', help='Specify socks proxy', action="store_true", required=False)
     parser.add_argument('-r', '--region', dest='region', help='Specify region name', default=os.environ.get('SSHEC2_AWS_REGION'), required=False)
     parser.add_argument('--scp-to-ec2', dest='scp_to', help='SCP from local to EC2 mode', action="store_true", required=False)
     parser.add_argument('--scp-from-ec2', dest='scp_from', help='SCP from EC2 to local mode', action="store_true", required=False)
@@ -149,16 +151,24 @@ def target_command(instance, key_path, username, public=True):
     )
 
 
-def bastion_commands(instance, key_path, username):
-    return ['-o', 'ProxyCommand="ssh -W %h:%p {}"'.format(target_command(instance, key_path, username))]
+def socks_proxy_commands(instance, socks_proxy_url, escape=''):
+    return '-o ProxyCommand={}"nc -x {} {} %p{}"'.format(escape, socks_proxy_url, get_host(instance), escape)
 
 
-def generate_scp_command(instance, key_path, username, bastion_instance, bastion_key_path, bastion_username, src_path, dst_path, scp_from, scp_to):
+def bastion_commands(target_instance, bastion_instance, key_path, username, socks_proxy_url):
+    socks_proxy_command = ''
+    if socks_proxy_url:
+        socks_proxy_command = socks_proxy_commands(bastion_instance, socks_proxy_url, escape='\\')
+
+    return ['-o', 'ProxyCommand="ssh {} -W {}:%p {}"'.format(socks_proxy_command, get_host(target_instance, False), target_command(bastion_instance, key_path, username))]
+
+
+def generate_scp_command(instance, key_path, username, bastion_instance, bastion_key_path, bastion_username, src_path, dst_path, scp_from, scp_to, socks_proxy_url):
     commands = ['scp', '-r']
 
     # bastion
     if bastion_instance:
-        commands.extend(bastion_commands(bastion_instance, bastion_key_path, bastion_username))
+        commands.extend(bastion_commands(instance, bastion_instance, bastion_key_path, bastion_username, socks_proxy_url))
 
     # target
     commands.extend(['-i', get_key_path(instance, key_path)])
@@ -179,12 +189,14 @@ def generate_scp_command(instance, key_path, username, bastion_instance, bastion
     return " ".join(commands)
 
 
-def generate_ssh_command(instance, key_path, username, bastion_instance, bastion_key_path, bastion_username):
+def generate_ssh_command(instance, key_path, username, bastion_instance, bastion_key_path, bastion_username, socks_proxy_url):
     commands = ['ssh']
 
     # bastion
     if bastion_instance:
-        commands.extend(bastion_commands(bastion_instance, bastion_key_path, bastion_username))
+        commands.extend(bastion_commands(instance, bastion_instance, bastion_key_path, bastion_username, socks_proxy_url))
+    elif socks_proxy_url:
+        commands.append(socks_proxy_commands(instance, socks_proxy_url))
 
     # target
     commands.append(target_command(instance, key_path, username, bastion_instance is None))
@@ -216,11 +228,11 @@ def main():
     if args.scp_from or args.scp_to:
         command = generate_scp_command(
             instance, args.key_path, args.username, bastion_instance, args.bastion_key_path,
-            args.bastion_username, args.src_path, args.dst_path, args.scp_from, args.scp_to)
+            args.bastion_username, args.src_path, args.dst_path, args.scp_from, args.scp_to, args.socks_proxy_url)
     else:
         command = generate_ssh_command(
             instance, args.key_path, args.username, bastion_instance, args.bastion_key_path,
-            args.bastion_username)
+            args.bastion_username, args.socks_proxy_url)
 
     LOGGER.debug(command)
     subprocess.call(command, shell=True)
