@@ -526,44 +526,59 @@ def test_target_command(instance, key_path, username, public, expected):
     assert sshec2.target_command(instance, key_path, username, public) == expected
 
 
-bastion_commands_data = [
-    (instances_data[0], None, None, ['-o', 'ProxyCommand="ssh -W %h:%p -i ~/.ssh/keypair0.pem ec2-user@0.0.0.0"']),
-    (instances_data[1], '~/.ssh/test.pem', None, ['-o', 'ProxyCommand="ssh -W %h:%p -i ~/.ssh/test.pem ec2-user@1.1.1.1"']),
-    (instances_data[2], None, 'test', ['-o', 'ProxyCommand="ssh -W %h:%p -i ~/.ssh/keypair2.pem test@2.2.2.2"']),
-    (instances_data[0], None, None, ['-o', 'ProxyCommand="ssh -W %h:%p -i ~/.ssh/keypair0.pem ec2-user@0.0.0.0"']),
+socks_proxy_commands_data = [
+    (instances_data[0], '10.0.0.1:1080', '-o ProxyCommand="nc -x 10.0.0.1:1080 0.0.0.0 %p"'),
 ]
 
 
-@pytest.mark.parametrize("instance,key_path,username,expected", bastion_commands_data)
-def test_bastion_commands(instance, key_path, username, expected):
-    assert sshec2.bastion_commands(instance, key_path, username) == expected
+@pytest.mark.parametrize("instance, socks_proxy_url,expected", socks_proxy_commands_data)
+def test_socks_proxy_commands(instance, socks_proxy_url, expected):
+    assert sshec2.socks_proxy_commands(instance, socks_proxy_url) == expected
+
+
+bastion_commands_data = [
+    (instances_data[1], instances_data[0], None, None, None, ['-o', 'ProxyCommand="ssh  -W 192.168.1.1:%p -i ~/.ssh/keypair0.pem ec2-user@0.0.0.0"']),
+    (instances_data[2], instances_data[1], '~/.ssh/test.pem', None, None, ['-o', 'ProxyCommand="ssh  -W 192.168.2.2:%p -i ~/.ssh/test.pem ec2-user@1.1.1.1"']),
+    (instances_data[0], instances_data[2], None, 'test', None, ['-o', 'ProxyCommand="ssh  -W 192.168.0.0:%p -i ~/.ssh/keypair2.pem test@2.2.2.2"']),
+    (instances_data[1], instances_data[0], None, None, None, ['-o', 'ProxyCommand="ssh  -W 192.168.1.1:%p -i ~/.ssh/keypair0.pem ec2-user@0.0.0.0"']),
+]
+
+
+@pytest.mark.parametrize("target_instance,bastion_instance,key_path,username,socks_proxy_url,expected", bastion_commands_data)
+def test_bastion_commands(target_instance, bastion_instance, key_path, username, socks_proxy_url, expected):
+    assert sshec2.bastion_commands(target_instance, bastion_instance, key_path, username, socks_proxy_url) == expected
 
 
 generate_scp_command_data = [
-    (instances_data[0], None, None, None, None, None, 'from.txt', '/to/', True, False, 'scp -r -i ~/.ssh/keypair0.pem ec2-user@0.0.0.0:from.txt /to/'),
-    (instances_data[1], '~/.ssh/test.pem', None, None, None, None, 'from.txt', '/to/', True, False, 'scp -r -i ~/.ssh/test.pem ec2-user@1.1.1.1:from.txt /to/'),
-    (instances_data[2], None, 'test', None, None, None, 'from.txt', '/to/', True, False, 'scp -r -i ~/.ssh/keypair2.pem test@2.2.2.2:from.txt /to/'),
-    (instances_data[0], None, None, instances_data[1], None, None, 'from.txt', '/to/', True, False, 'scp -r -o ProxyCommand="ssh -W %h:%p -i ~/.ssh/keypair1.pem ec2-user@1.1.1.1" -i ~/.ssh/keypair0.pem ec2-user@192.168.0.0:from.txt /to/'),
-    (instances_data[0], None, None, instances_data[1], None, None, 'from.txt', '/to/', False, True, 'scp -r -o ProxyCommand="ssh -W %h:%p -i ~/.ssh/keypair1.pem ec2-user@1.1.1.1" -i ~/.ssh/keypair0.pem from.txt ec2-user@192.168.0.0:/to/'),
+    (instances_data[0], None, None, None, None, None, 'from.txt', '/to/', True, False, None, 'scp -r -i ~/.ssh/keypair0.pem ec2-user@0.0.0.0:from.txt /to/'),
+    (instances_data[1], '~/.ssh/test.pem', None, None, None, None, 'from.txt', '/to/', True, False, None, 'scp -r -i ~/.ssh/test.pem ec2-user@1.1.1.1:from.txt /to/'),
+    (instances_data[2], None, 'test', None, None, None, 'from.txt', '/to/', True, False, None, 'scp -r -i ~/.ssh/keypair2.pem test@2.2.2.2:from.txt /to/'),
+    (instances_data[0], None, None, instances_data[1], None, None, 'from.txt', '/to/', True, False, None, 'scp -r -o ProxyCommand="ssh  -W 192.168.0.0:%p -i ~/.ssh/keypair1.pem ec2-user@1.1.1.1" -i ~/.ssh/keypair0.pem ec2-user@192.168.0.0:from.txt /to/'),
+    (instances_data[0], None, None, instances_data[1], None, None, 'from.txt', '/to/', False, True, None, 'scp -r -o ProxyCommand="ssh  -W 192.168.0.0:%p -i ~/.ssh/keypair1.pem ec2-user@1.1.1.1" -i ~/.ssh/keypair0.pem from.txt ec2-user@192.168.0.0:/to/'),
 ]
 
 
-@pytest.mark.parametrize("instance,key_path,username,bastion_instance,bastion_key_path,bastion_username,src_path,dst_path,scp_from,scp_to,expected", generate_scp_command_data)
-def test_generate_scp_command(instance, key_path, username, bastion_instance, bastion_key_path, bastion_username, src_path, dst_path, scp_from, scp_to, expected):
-    assert sshec2.generate_scp_command(instance, key_path, username, bastion_instance, bastion_key_path, bastion_username, src_path, dst_path, scp_from, scp_to) == expected
+@pytest.mark.parametrize("instance,key_path,username,bastion_instance,bastion_key_path,bastion_username,src_path,dst_path,scp_from,scp_to,socks_proxy_url,expected", generate_scp_command_data)
+def test_generate_scp_command(instance, key_path, username, bastion_instance, bastion_key_path, bastion_username, src_path, dst_path, scp_from, scp_to, socks_proxy_url, expected):
+    assert sshec2.generate_scp_command(instance, key_path, username, bastion_instance, bastion_key_path, bastion_username, src_path, dst_path, scp_from, scp_to, socks_proxy_url) == expected
 
 
 generate_ssh_command_data = [
-    (instances_data[0], None, None, None, None, None, 'ssh -i ~/.ssh/keypair0.pem ec2-user@0.0.0.0'),
-    (instances_data[1], '~/.ssh/test.pem', None, None, None, None, 'ssh -i ~/.ssh/test.pem ec2-user@1.1.1.1'),
-    (instances_data[2], None, 'test', None, None, None, 'ssh -i ~/.ssh/keypair2.pem test@2.2.2.2'),
-    (instances_data[0], None, None, instances_data[1], None, None, 'ssh -o ProxyCommand="ssh -W %h:%p -i ~/.ssh/keypair1.pem ec2-user@1.1.1.1" -i ~/.ssh/keypair0.pem ec2-user@192.168.0.0'),
+    (instances_data[0], None, None, None, None, None, None, 'ssh -i ~/.ssh/keypair0.pem ec2-user@0.0.0.0'),
+    (instances_data[1], '~/.ssh/test.pem', None, None, None, None, None, 'ssh -i ~/.ssh/test.pem ec2-user@1.1.1.1'),
+    (instances_data[2], None, 'test', None, None, None, None, 'ssh -i ~/.ssh/keypair2.pem test@2.2.2.2'),
+    (instances_data[0], None, None, instances_data[1], None, None, None,
+     'ssh -o ProxyCommand="ssh  -W 192.168.0.0:%p -i ~/.ssh/keypair1.pem ec2-user@1.1.1.1" -i ~/.ssh/keypair0.pem ec2-user@192.168.0.0'),
+    (instances_data[0], None, None, None, None, None, '10.0.0.1:1080',
+     'ssh -o ProxyCommand="nc -x 10.0.0.1:1080 0.0.0.0 %p" -i ~/.ssh/keypair0.pem ec2-user@0.0.0.0'),
+    (instances_data[0], None, None, instances_data[1], None, None, '10.0.0.1:1080',
+     'ssh -o ProxyCommand="ssh -o ProxyCommand=\\"nc -x 10.0.0.1:1080 1.1.1.1 %p\\" -W 192.168.0.0:%p -i ~/.ssh/keypair1.pem ec2-user@1.1.1.1" -i ~/.ssh/keypair0.pem ec2-user@192.168.0.0'),
 ]
 
 
-@pytest.mark.parametrize("instance,key_path,username,bastion_instance,bastion_key_path,bastion_username,expected", generate_ssh_command_data)
-def test_generate_ssh_command(instance, key_path, username, bastion_instance, bastion_key_path, bastion_username, expected):
-    assert sshec2.generate_ssh_command(instance, key_path, username, bastion_instance, bastion_key_path, bastion_username) == expected
+@pytest.mark.parametrize("instance,key_path,username,bastion_instance,bastion_key_path,bastion_username,socks_proxy_url,expected", generate_ssh_command_data)
+def test_generate_ssh_command(instance, key_path, username, bastion_instance, bastion_key_path, bastion_username, socks_proxy_url, expected):
+    assert sshec2.generate_ssh_command(instance, key_path, username, bastion_instance, bastion_key_path, bastion_username, socks_proxy_url) == expected
 
 
 def mock_parse_args(expected):
